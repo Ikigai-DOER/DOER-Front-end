@@ -1,0 +1,23 @@
+.doer-badge {
+    background-color: grey;
+    display: inline-block;
+    padding: 6px 10px;
+    color: white;
+    border-radius: 20px;
+    border: 3px solid white;
+    position: relative;
+    right: 50px;
+    top: 60px;
+}
+
+.doer-badge--online {
+    background-color: green;
+}
+
+.doer-badge--busy {
+    background-color: yellow;
+}
+
+.doer-badge--unavailable {
+    background-color: red;
+}

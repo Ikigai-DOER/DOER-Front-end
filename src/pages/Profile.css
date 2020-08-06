@@ -1,0 +1,8 @@
+h1 {
+    font-size: 2.5rem;
+}
+
+.tag {
+    border-radius: 20px;
+    border: 10px solid black;
+}
