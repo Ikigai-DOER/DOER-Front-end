@@ -11,3 +11,7 @@
     border-radius: 20px;
     padding: 2px 10px;
 }
+
+.profile p {
+    font-size: 2rem;
+}

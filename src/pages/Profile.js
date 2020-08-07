@@ -5,7 +5,7 @@ import './Profile.css'
 
 const Profile = () => {
     const [rate, setRate] = useState(0);
-    const [tags, setTags] = useState(['radim', 'gradim', 'pare da zaradim'])
+    const [tags, setTags] = useState(['radim', 'gradim', 'pare da zaradim']);
 
     return (
         <div className="profile">
@@ -33,7 +33,7 @@ const Profile = () => {
                     </Space>
                 </Col>
                 <Col span={8} flex={1} className="centered-column">
-                    <Space align="center">
+                    <Space align="baseline" size={20}>
                         <Rate
                             value={rate}
                             onChange={setRate}
