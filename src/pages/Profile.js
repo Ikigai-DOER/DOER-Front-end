@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
-import {Col, Rate, Row, Space, Tag} from "antd";
-import DoerAvatar from "../DoerAvatar";
+import {Button, Col, Rate, Row, Space, Tag} from "antd";
+import DoerAvatar from "../components/DoerAvatar";
 import './Profile.css'
 
 const Profile = () => {
@@ -8,13 +8,13 @@ const Profile = () => {
     const [tags, setTags] = useState(['radim', 'gradim', 'pare da zaradim'])
 
     return (
+        <div className="profile">
             <Row
                 align="middle"
                 justify="start"
-                style={{backgroundColor: 'whitesmoke', padding: 20}}
             >
                 <Col span={8} flex={1} className="centered-column">
-                    <DoerAvatar />
+                    <DoerAvatar status={'online'} />
                 </Col>
                 <Col span={8} flex={1} className="centered-column">
                     <Space align="center">
@@ -44,6 +44,15 @@ const Profile = () => {
                     </Space>
                 </Col>
             </Row>
+            <br/>
+            <Row>
+                <Col span={24} className="centered-column">
+                    <Button type="primary">
+                        Unajmi
+                    </Button>
+                </Col>
+            </Row>
+        </div>
     );
 };
 
