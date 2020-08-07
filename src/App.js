@@ -1,10 +1,10 @@
 import React from 'react';
 import './App.css';
-import Profile from "./pages/Profile";
+import LandingPage from "./pages/LandingPage";
 
 function App() {
   return (
-    <Profile />
+    <LandingPage />
   );
 }
 
