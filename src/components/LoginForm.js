@@ -1,67 +1,85 @@
-import {Button, Col, Form, Input, Layout, Row} from "antd";
-import {Icon} from "@iconify/react";
-import userOutlined from "@iconify/icons-ant-design/user-outlined";
-import lockTwoTone from "@iconify/icons-ant-design/lock-twotone";
-import React from "react";
+import React, {useState, useEffect} from 'react'
+import {useHistory} from "react-router";
+import {Row, Col, Form, Input, Button, message, Divider, Layout} from 'antd';
+import {UserOutlined, LockOutlined} from '@ant-design/icons';
 
-const {Header, Footer, Content} = Layout;
+const {Content} = Layout;
+function LoginForm() {
+    let history = useHistory();
 
-function LoginForm(props) {
-    return (<Row className="login-form" align="middle" style={{marginTop: props.isMobile ? 0 : "10%"}}>
-            <Col offset={props.isMobile ? 0 : 8} span={props.isMobile ? 24 : 8}>
-                <Layout className="login-layout">
-                    <Header>LOGO</Header>
-                    <Content className="content">
-                        <Form>
-                            <Form.Item name="username">
+    const handleOnFinish = value => {};
+
+    const handleValidatePassword = (rule, value) => {
+        if(value && value.length <= 8)
+            return Promise.reject('Ovo polje mora imati vise od 8 karaktera.');
+        return Promise.resolve();
+    }
+
+    return <Layout>
+        <Content style={{height: '100vh'}} className='content-background'>
+            <div className='login'>
+                <Row>
+                    <Col span={24}>
+                        {/*<img src={""} style={{width: '100%'}} alt='conmisi logo'/>*/}
+                        <Form
+                            style={{marginTop: '1em'}}
+                            size='large'
+                            name="normal_login"
+                            onFinish={handleOnFinish}
+                        >
+                            <Form.Item
+                                name="username"
+                                rules={[
+                                    {
+                                        required: true, message: "Ovo polje ne sme biti prazno",
+                                    },
+                                    {
+                                        type: "email",
+                                        message: 'Unesite ispravan email.'
+                                    }
+                                ]}
+                            >
                                 <Input
-                                    placeholder="Unesite korisničko ime"
-                                    prefix={<Icon icon={userOutlined}/>}
+                                    prefix={<UserOutlined/>}
+                                    placeholder="Korisnicko ime"
                                 />
                             </Form.Item>
-                            <Form.Item name="password">
+                            <Form.Item
+                                name="password"
+                                rules={[
+                                    {
+                                        validator: handleValidatePassword,
+                                    }
+                                ]}
+                            >
                                 <Input.Password
+                                    prefix={<LockOutlined/>}
+                                    type="password"
                                     placeholder="Lozinka"
-                                    prefix={<Icon icon={lockTwoTone}/>}
                                 />
+                            </Form.Item>
+
+                            <Form.Item>
+                                <Button type="primary" htmlType="submit" size='large' style={{width: '100%'}}>
+                                    Ulogujte se
+                                </Button>
+
+                                <Divider>
+                                    Nemate profil?
+                                </Divider>
+
+                                <Button type='default'
+                                        size='large'
+                                        style={{width: '100%'}}>
+                                    Registrujte se
+                                </Button>
                             </Form.Item>
                         </Form>
-                    </Content>
-                    <Footer>
-                        <Row justify="center">
-                            {props.changeOrder ?
-                                <>
-                                    <Col span="10">
-                                        <Row>
-                                            <span>Nemate profil?</span>
-                                            <span onClick={() => props.goToRegister(true)}>Registrujte se!</span>
-                                        </Row>
-                                    </Col>
-                                    <Col span="3">
-                                        <Button type="primary" size="large">Uloguj
-                                            se</Button>
-                                    </Col>
-                                </> :
-                                <>
-                                    <Row>
-                                        <Col span="5">
-                                            <Button type="primary" size="large">Uloguj se</Button>
-                                        </Col>
-                                    </Row>
-                                    <Row justify="center">
-                                            <Row>
-                                                <span>Nemate profil?&nbsp;</span>
-                                                <span onClick={() => props.goToRegister(true)}>Registrujte se!</span>
-                                            </Row>
-                                    </Row>
-                                </>
-                            }
-                        </Row>
-                    </Footer>
-                </Layout>
-            </Col>
-        </Row>
-    );
+                    </Col>
+                </Row>
+            </div>
+        </Content>
+    </Layout>
 }
 
 export default LoginForm;

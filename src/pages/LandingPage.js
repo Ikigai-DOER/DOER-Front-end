@@ -1,10 +1,14 @@
 import React, {useEffect, useState} from "react";
-import LoginForm from "../components/LoginForm";
-import { Form, Grid, Col, Input, Layout, Button, Space} from "antd";
+import {Grid, Layout} from "antd";
 
 import "./LandingPage.css";
+import "../components/LoginForm.css";
+import "../components/RegistrationForm.css";
+import RegistrationForm from "../components/RegistrationForm";
+import LoginForm from "../components/LoginForm";
 
-const { Content} = Layout;
+
+const {Content} = Layout;
 const {useBreakpoint} = Grid;
 
 function LandingPage() {
@@ -21,7 +25,8 @@ function LandingPage() {
     return (
         <Layout>
             <Content style={{backgroundColor: "white"}}>
-                <LoginForm goToRegister={setOpenRegisterForm} isMobile={isMobile} changeOrder={changeOrder}/>
+                {/*<LoginForm goToRegister={setOpenRegisterForm} isMobile={isMobile} changeOrder={changeOrder}/>*/}
+                <RegistrationForm goToRegister={setOpenRegisterForm} isMobile={isMobile} changeOrder={changeOrder}/>
             </Content>
         </Layout>
     );
