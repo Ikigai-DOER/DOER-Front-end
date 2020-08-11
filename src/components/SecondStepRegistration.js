@@ -1,64 +1,101 @@
-import {Button, Col, Divider, Form, Input} from "antd";
+import {Button, DatePicker, Divider, Form, Input} from "antd";
 import React from "react";
+import locale from "antd/es/time-picker/locale/sr_RS";
+import {RegistrationState} from "../constants";
+import moment from "moment";
 
 export const SecondStepRegistration = (props) => {
-
-    function handleValidatePassword() {
-        return true;
-    }
-
     return (
         <Form
             style={{marginTop: '1em'}}
             size='large'
             name="normal_login"
-            onFinish={props.handleOnFinish}
-        >
-            <Form.Item
-                name="username"
+            onFinish={(values) => {
+                props.setProfile({
+                    ...props.profile,
+                    phoneNo: values.phoneNo,
+                    user: {
+                        firstName: values.firstName,
+                        lastName: values.lastName,
+                        birthDate: values.birthDate.format('DD-MM-YYYY'),
+                    }
+                });
+                props.setStep(RegistrationState.ProfileInfo);
+            }}
+                >
+                <Form.Item
+                name="firstName"
+                rules={[
+            {
+                required: true, message: "Ovo polje ne sme biti prazno",
+            },
+            {
+                type: "string",
+                message: 'Unesite Vase ime.'
+            }
+                ]}
+                >
+                <Input
+                placeholder="Ime"
+                />
+                </Form.Item>
+
+                <Form.Item
+                name="lastName"
                 rules={[
                     {
                         required: true, message: "Ovo polje ne sme biti prazno",
                     },
                     {
                         type: "string",
-                        message: 'Unesite korisnicko ime.'
+                        message: 'Unesite Vase prezime.'
                     }
                 ]}
-            >
+                >
                 <Input
-                    placeholder="Korisnicko ime"
+                placeholder="Prezime"
                 />
-            </Form.Item>
-            <Form.Item
-                name="password"
+                </Form.Item>
+
+                <Form.Item
+                name="birthDate"
                 rules={[
                     {
-                        validator: handleValidatePassword,
+                        required: true, message: 'Ovo polje ne sme biti prazno'
+                    },
+                ]}>
+                <DatePicker style={{width: '100%'}} placeholder="Datum rodjenja" locale={locale}
+                format={moment().format('DD-MM-YYYY')}/>
+                </Form.Item>
+
+                <Form.Item
+                name="phoneNo"
+                rules={[
+                    {
+                        type: "string",
+                        message: 'Unesite Vas broj telefona.'
                     }
                 ]}
-            >
-                <Input.Password
-                    type="password"
-                    placeholder="Lozinka"
+                >
+                <Input
+                placeholder="Broj telefona"
                 />
-            </Form.Item>
+                </Form.Item>
 
-            <Form.Item>
+                <Form.Item>
                 <Button type="primary" htmlType="submit" size='large' style={{width: '100%'}}>
-                    Ulogujte se
+                Dalje
                 </Button>
 
-                <Divider>
-                    Nemate profil?
-                </Divider>
+                <Divider/>
 
                 <Button type='default'
-                        size='large'
-                        style={{width: '100%'}}>
-                    Nazad
+                size='large'
+                style={{width: '100%'}}
+                onClick={() => props.setStep(RegistrationState.RoleInfo)}>
+                Nazad
                 </Button>
-            </Form.Item>
-        </Form>
-    )
-}
+                </Form.Item>
+                </Form>
+                )
+                }

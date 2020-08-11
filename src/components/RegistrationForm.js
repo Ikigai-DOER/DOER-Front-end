@@ -1,20 +1,30 @@
 import React, {useState} from 'react'
 import {useHistory} from "react-router";
-import {Row, Col, Form, Input, Button, Divider, Layout, Steps} from 'antd';
-import {UserOutlined, LockOutlined} from '@ant-design/icons';
+import {Col, Layout, Row, Steps} from 'antd';
 import {FirstStepRegistration} from "./FirstStepRegistration";
 import {SecondStepRegistration} from "./SecondStepRegistration";
+import {RegistrationState, Roles} from "../constants";
+import {ThirdStepRegistration} from "./ThirdStepRegistration";
 
 const {Content} = Layout;
 
 function RegistrationForm() {
     let history = useHistory();
-    const [step, setStep] = useState(0);
-    const {Step} = Steps;
+    const [step, setStep] = useState(RegistrationState.RoleInfo);
+    const [profileType, setProfileType] = useState(Roles.DOER);
+    const [profile, setProfile] = useState({
+            user: {
+                username: '',
+                firstName: '',
+                lastName: '',
+                birthDate: {},
+                password: '',
+            },
+            phoneNo: ''
+        }
+    );
 
-    const handleOnFinish = () => {
-        setStep(step + 1)
-    };
+    const {Step} = Steps;
 
     return <Layout>
         <Content style={{height: '100vh'}} className='content-background'>
@@ -22,12 +32,14 @@ function RegistrationForm() {
                 <Row>
                     <Col span={24}>
                         {/*<img src={""} style={{width: '100%'}} alt='conmisi logo'/>*/}
-                        {step === 0 && <FirstStepRegistration handleOnFinish={handleOnFinish}/>}
-                        {step === 1 && <SecondStepRegistration handleOnFinish={handleOnFinish}/>}
+                        {step === RegistrationState.RoleInfo && <FirstStepRegistration setStep={setStep} setProfileType={setProfileType}/>}
+                        {step === RegistrationState.UserInfo && <SecondStepRegistration setStep={setStep} profile={profile} setProfile={setProfile}/>}
+                        {step === RegistrationState.ProfileInfo && <ThirdStepRegistration setStep={setStep} profile={profile} setProfile={setProfile} profileType={profileType}/>}
+
                         <Steps current={step}>
-                            <Step title='User info' description="Enter user info"/>
-                            <Step title='User info' description="Enter user info"/>
-                            <Step title='User info' description="Enter user info"/>
+                            <Step title='Role' description="My role"/>
+                            <Step title='About me' description="My basic info"/>
+                            <Step title='Make my account' description="Enter account info"/>
                         </Steps>
                     </Col>
                 </Row>

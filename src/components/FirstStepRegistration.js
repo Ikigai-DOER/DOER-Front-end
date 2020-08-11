@@ -1,62 +1,37 @@
-import {Button, Divider, Form, Input} from "antd";
-import React from "react";
+import {Button, Divider, Form, Row, Switch} from "antd";
+import React, {useState} from "react";
+import {RegistrationState, Roles} from "../constants";
 
 export const FirstStepRegistration = (props) => {
+    const [role, setRole] = useState(Roles.DOER);
+
     return (
         <Form
             style={{marginTop: '1em'}}
             size='large'
-            name="normal_login"
-            onFinish={props.handleOnFinish}
+            name='normal_login'
+            onFinish={() => props.setStep(RegistrationState.UserInfo)}
         >
-            <Form.Item
-                name="firstName"
-                rules={[
-                    {
-                        required: true, message: "Ovo polje ne sme biti prazno",
-                    },
-                    {
-                        type: "string",
-                        message: 'Unesite Vase ime.'
-                    }
-                ]}
-            >
-                <Input
-                    placeholder="Ime"
-                />
+            <Form.Item name="role">
+                <Row>
+                    <h2>
+                        I am a
+                    </h2>
+                </Row>
+                <Row span={24} justify="center">
+                    <div style={{fontSize: 90, textAlign: 'center', width: '100%'}}>
+                        {role === Roles.DOER ? 'DOER' : 'EMPLOYER'}
+                    </div>
+                    <Switch onChange={() => {
+                        setRole(!role);
+                        props.setProfileType(!role);
+                    }}/>
+                </Row>
             </Form.Item>
-            <Form.Item
-                name="lastName"
-                rules={[
-                    {
-                        required: true, message: "Ovo polje ne sme biti prazno",
-                    },
-                    {
-                        type: "string",
-                        message: 'Unesite Vase prezime.'
-                    }
-                ]}
-            >
-                <Input
-                    placeholder="Prezime"
-                />
-            </Form.Item>
-            <Form.Item
-                name="phoneNo"
-                rules={[
-                    {
-                        type: "number",
-                        message: 'Unesite Vas broj telefona.'
-                    }
-                ]}
-            >
-                <Input
-                    placeholder="Broj telefona"
-                />
-            </Form.Item>
+
             <Form.Item>
                 <Button type="primary" htmlType="submit" size='large' style={{width: '100%'}}>
-                    Sledeci korak
+                    Dalje
                 </Button>
 
                 <Divider>
@@ -66,7 +41,7 @@ export const FirstStepRegistration = (props) => {
                 <Button type='default'
                         size='large'
                         style={{width: '100%'}}>
-                    Ulogujte se
+                    Uloguj se
                 </Button>
             </Form.Item>
         </Form>
