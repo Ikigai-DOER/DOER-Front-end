@@ -1,0 +1,34 @@
+.register {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 560px;
+    padding: 0 2em 0 2em;
+    border: 1px solid lightgray;
+    border-radius: 8px;
+    background-color: white;
+}
+
+
+.input-white {
+    background: white;
+}
+
+.input-white input {
+    background: white;
+}
+
+@media only screen and (max-width: 512px) {
+    .login {
+        top: 50%;
+        border: 0;
+        padding: 0;
+        height: 100%;
+        width: 80%;
+    }
+
+    .content-background {
+        background-color: white;
+    }
+}

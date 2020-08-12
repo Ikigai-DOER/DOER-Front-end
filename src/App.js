@@ -5,6 +5,7 @@ import JobList from "./pages/JobList";
 import {Redirect, Route, BrowserRouter as Router, Switch} from "react-router-dom";
 import Main from "./Main";
 import NotFound from "./pages/NotFound";
+import LandingPage from "./pages/LandingPage";
 
 function App() {
 
