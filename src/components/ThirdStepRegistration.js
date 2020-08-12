@@ -1,21 +1,20 @@
-import {Button, Col, Divider, Form, Input} from "antd";
+import {Button, Divider, Form, Input} from "antd";
 import React, {useState} from "react";
 import {RegistrationState, Roles} from "../constants";
 
 export const ThirdStepRegistration = (props) => {
     const [password, setPassword] = useState('');
 
+    const {profile} = props;
+
+    const [form] = Form.useForm();
+
     return (
         <Form
             style={{marginTop: '1em'}}
             size='large'
-            name="normal_login"
+            form={form}
             onFinish={(values) => {
-                if (values.password !== values.passwordRep) {
-                    alert('Upisite isti password');
-                    return;
-                }
-
                 props.setProfile({
                     ...props.profile,
                     user: {
@@ -30,8 +29,6 @@ export const ThirdStepRegistration = (props) => {
                 } else {
                     alert("EMPLOYER REGISTERED");
                 }
-
-                console.log(props.profile);
             }}
         >
             <Form.Item
@@ -55,7 +52,10 @@ export const ThirdStepRegistration = (props) => {
                 rules={[
                     {
                         required: true, message: 'Ovo polje mora biti ispunjeno.'
-                    }
+                    },
+                    {
+                        min: 8, message: 'Lozinka mora imati makar 8 karaktera.'
+                    },
                 ]}
             >
                 <Input.Password
@@ -69,6 +69,16 @@ export const ThirdStepRegistration = (props) => {
                 rules={[
                     {
                         required: true, message: 'Ovo polje mora biti ispunjeno.'
+                    },
+                    {
+                        min: 8, message: 'Lozinka mora imati makar 8 karaktera.'
+                    },
+                    {
+                        validator: (_, value) => {
+                            if (value !== form.getFieldValue('password'))
+                                return Promise.reject('Lozinke moraju biti istovetne.');
+                            return Promise.resolve();
+                        }
                     }
                 ]}
             >
@@ -85,6 +95,8 @@ export const ThirdStepRegistration = (props) => {
 
                 <Divider/>
 
+            </Form.Item>
+            <Form.Item>
                 <Button type='default'
                         size='large'
                         style={{width: '100%'}}

@@ -9,7 +9,6 @@ export const SecondStepRegistration = (props) => {
         <Form
             style={{marginTop: '1em'}}
             size='large'
-            name="normal_login"
             onFinish={(values) => {
                 props.setProfile({
                     ...props.profile,
@@ -22,25 +21,25 @@ export const SecondStepRegistration = (props) => {
                 });
                 props.setStep(RegistrationState.ProfileInfo);
             }}
-                >
-                <Form.Item
+        >
+            <Form.Item
                 name="firstName"
                 rules={[
-            {
-                required: true, message: "Ovo polje ne sme biti prazno",
-            },
-            {
-                type: "string",
-                message: 'Unesite Vase ime.'
-            }
+                    {
+                        required: true, message: "Ovo polje ne sme biti prazno",
+                    },
+                    {
+                        type: "string",
+                        message: 'Unesite Vase ime.'
+                    }
                 ]}
-                >
+            >
                 <Input
-                placeholder="Ime"
+                    placeholder="Ime"
                 />
-                </Form.Item>
+            </Form.Item>
 
-                <Form.Item
+            <Form.Item
                 name="lastName"
                 rules={[
                     {
@@ -51,13 +50,13 @@ export const SecondStepRegistration = (props) => {
                         message: 'Unesite Vase prezime.'
                     }
                 ]}
-                >
+            >
                 <Input
-                placeholder="Prezime"
+                    placeholder="Prezime"
                 />
-                </Form.Item>
+            </Form.Item>
 
-                <Form.Item
+            <Form.Item
                 name="birthDate"
                 rules={[
                     {
@@ -65,37 +64,44 @@ export const SecondStepRegistration = (props) => {
                     },
                 ]}>
                 <DatePicker style={{width: '100%'}} placeholder="Datum rodjenja" locale={locale}
-                format={moment().format('DD-MM-YYYY')}/>
-                </Form.Item>
+                            format={moment().format('DD-MM-YYYY')}/>
+            </Form.Item>
 
-                <Form.Item
+            <Form.Item
                 name="phoneNo"
                 rules={[
                     {
                         type: "string",
                         message: 'Unesite Vas broj telefona.'
+                    }, {
+                        validator: (_, value) => {
+                            if (!value.match(/^(\+\d{1,3})?[\s-/]?\d{2,3}([\s-/]?\d{2,3}){2,3}$/))
+                                return Promise.reject("Unesite ispravan broj telefona.");
+                            return Promise.resolve();
+                        }
                     }
                 ]}
-                >
+            >
                 <Input
-                placeholder="Broj telefona"
+                    placeholder="Broj telefona"
                 />
-                </Form.Item>
+            </Form.Item>
 
-                <Form.Item>
+            <Form.Item>
                 <Button type="primary" htmlType="submit" size='large' style={{width: '100%'}}>
-                Dalje
+                    Dalje
                 </Button>
 
                 <Divider/>
-
+            </Form.Item>
+            <Form.Item>
                 <Button type='default'
-                size='large'
-                style={{width: '100%'}}
-                onClick={() => props.setStep(RegistrationState.RoleInfo)}>
-                Nazad
+                        size='large'
+                        style={{width: '100%'}}
+                        onClick={() => props.setStep(RegistrationState.RoleInfo)}>
+                    Nazad
                 </Button>
-                </Form.Item>
-                </Form>
-                )
-                }
+            </Form.Item>
+        </Form>
+    )
+}
