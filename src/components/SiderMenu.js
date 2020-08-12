@@ -27,7 +27,7 @@ function SiderMenu() {
     }
 
     useEffect(() => {
-        if (location.pathname === '/site/doer-list' || location.pathname.contains('/site/profile')) {
+        if (location.pathname === '/site/doer-list' || location.pathname.includes('/site/profile')) {
             setSelectedKey(1);
         } else if (location.pathname === '/dentist/calendar') {
             setSelectedKey(2);
