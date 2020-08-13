@@ -52,3 +52,5 @@ export const getAvailabilityColor = availability => {
             return 'blue';
     }
 };
+
+export const formatCurrency = amount => +amount + '€';

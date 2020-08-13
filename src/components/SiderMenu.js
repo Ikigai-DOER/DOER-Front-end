@@ -7,7 +7,7 @@ import {useHistory, useLocation} from "react-router";
 import {Menu} from "antd";
 
 //Ant icons
-import {CalendarOutlined, SearchOutlined, UserAddOutlined} from "@ant-design/icons";
+import {CalendarOutlined, SearchOutlined, UserOutlined} from "@ant-design/icons";
 
 function SiderMenu() {
     let history = useHistory();
@@ -18,18 +18,18 @@ function SiderMenu() {
 
     const [selectedKey, setSelectedKey] = useState(0);
 
-    if (location.pathname === '/site/doer-list') {
+    if (location.pathname.includes('doer')) {
         defaultKeys = 1;
-    } else if (location.pathname === '/dentist/calendar') {
+    } else if (location.pathname.includes('nesto')) {
         defaultKeys = 2;
     } else {
         defaultKeys = 0;
     }
 
     useEffect(() => {
-        if (location.pathname === '/site/doer-list' || location.pathname.includes('/site/profile')) {
+        if (location.pathname.includes('doer')) {
             setSelectedKey(1);
-        } else if (location.pathname === '/dentist/calendar') {
+        } else if (location.pathname.includes('nesto')) {
             setSelectedKey(2);
         } else {
             setSelectedKey(0);
@@ -48,27 +48,27 @@ function SiderMenu() {
         <Menu.Item key="0"
                    style={{marginBottom: '1em'}}
                    onClick={() => {
-                       history.push('/');
+                       history.push('/site/job');
                        goToTop()
                    }}
         >
-            <UserAddOutlined/>
+            <SearchOutlined/>
             <span>Poslovi</span>
         </Menu.Item>
         <Menu.Item key="1"
                    style={{marginBottom: '1em'}}
                    onClick={() => {
-                       history.push('/site/doer-list')
+                       history.push('/site/doer')
                        goToTop();
                    }}
         >
-            <SearchOutlined/>
+            <UserOutlined/>
             <span>DOER-i</span>
         </Menu.Item>
         <Menu.Item key="2"
                    style={{marginBottom: '1em'}}
                    onClick={() => {
-                       history.push('/dentist/calendar')
+                       history.push('/nesto')
                        goToTop();
                    }}
         >

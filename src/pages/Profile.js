@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Alert, Button, Col, Rate, Row, Space, Spin, Tag} from "antd";
 import DoerAvatar from "../components/DoerAvatar";
 import './Profile.css'
@@ -8,18 +8,19 @@ import api from "../api";
 
 const Profile = () => {
     const [rate, setRate] = useState(0);
-    const [tags, setTags] = useState(['radim', 'gradim', 'pare da zaradim']);
 
     const history = useHistory();
     const paths = history.location.pathname.split('/')
     const path = paths[paths.length - 1];
     console.log(path)
 
-    const [{data, isLoading, isError}, setFn] = useApi(api.getDoer(1), {});
+    const [{data, isLoading, isError}, setFn] = useApi(() => api.getDoer(1), {});
+
+    useEffect(() => setRate(data || 0), [data]);
 
     if (isLoading) {
         return (
-            <Spin />
+            <Spin size="large" style={{ width: '100%', height: '100%', marginTop: 200 }} />
         );
     }
 
@@ -44,11 +45,11 @@ const Profile = () => {
                 justify="start"
             >
                 <Col span={8} flex={1} className="centered-column">
-                    <DoerAvatar status={'online'} src={data.profilePic} />
+                    <DoerAvatar status={'online'} src={data.profile_pic} />
                 </Col>
                 <Col span={8} flex={1} className="centered-column">
                     <Space align="center">
-                        <h1>{data.firstName + ' ' + data.lastName}</h1>
+                        <h1>{data.user_profile.first_name + ' ' + data.user_profile.last_name}</h1>
                     </Space>
                     <br/>
                     <Space align="center">
@@ -59,6 +60,7 @@ const Profile = () => {
                     <Space align="center">
                         {data.professions.map(profession =>
                             <Tag
+                                key={profession}
                                 color="purple"
                                 className="tag"
                                 onClick={() => {
@@ -72,12 +74,14 @@ const Profile = () => {
                 </Col>
                 <Col span={8} flex={1} className="centered-column">
                     <Space align="baseline" size={20}>
-                        <Rate
-                            value={data.userRating}
-                            onChange={() => console.log('rating')}
-                        />
+                        <div className="rating">
+                            <Rate
+                                value={rate}
+                                onChange={() => console.log('rating')}
+                            />
+                        </div>
                         <p>
-                            {data.averageMark} / 5
+                            {data.average_mark} / 5
                         </p>
                     </Space>
                 </Col>
@@ -85,9 +89,14 @@ const Profile = () => {
             <br/>
             <Row>
                 <Col span={24} className="centered-column">
-                    <Button type="primary">
-                        Unajmi
-                    </Button>
+                    <Space>
+                        <Button type="primary">
+                            Unajmi
+                        </Button>
+                        <Button type="primary" danger>
+                            Prijavi
+                        </Button>
+                    </Space>
                 </Col>
             </Row>
         </div>

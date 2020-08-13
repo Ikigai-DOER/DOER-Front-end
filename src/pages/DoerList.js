@@ -5,25 +5,10 @@ import {useHistory} from "react-router";
 import {useApi} from "../utils";
 import api from '../api';
 
-const DoerList = props => {
-
+const DoerList = () => {
     let history = useHistory();
 
-
-    // for (let i = 0; i < 23; i++) {
-    //     mockData.push({
-    //         id: i,
-    //         href: 'https://ant.design',
-    //         title: `ant design part ${i}`,
-    //         avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-    //         description:
-    //             'Ant Design, a design language for background applications, is refined by Ant UED Team.',
-    //         content:
-    //             'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
-    //     });
-    // }
-
-    const [{data, isLoading, isError}, setFn] = useApi(api.getDoers(), []);
+    const [{data, isLoading, isError}, setFn] = useApi(() => api.getDoers(), []);
 
     return (
         <div className="job-list">
@@ -40,20 +25,21 @@ const DoerList = props => {
                         size="large"
                         dataSource={data}
                         renderItem={item => (
-                            <div className="list-item list-item-clickable">
+                            <div className="list-item">
                                 <List.Item
-                                    key={item.username}
+                                    key={item.user_profile.username}
                                     onClick={() => {
-                                        history.push(`/site/profile/${item.username}`);
+                                        history.push(`/site/doer/${item.user_profile.username}`);
                                     }}
                                 >
                                     <List.Item.Meta
-                                        avatar={<Avatar src={item.profilePic} />}
-                                        title={<span>{item.firstName}</span>}
-                                        description={item.averageMark}
+                                        avatar={<Avatar src={item.profilePic} size={60} />}
+                                        title={<span>{item.userProfile.firstName + ' ' + item.user_profile.last_name}</span>}
+                                        description={item.average_mark}
                                     />
                                     {item.professions.map(profession => (
                                         <Tag
+                                            key={profession}
                                             color="purple"
                                             className="tag list-tag"
                                             onClick={() => {

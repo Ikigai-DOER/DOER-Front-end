@@ -10,6 +10,7 @@ import Profile from "./pages/Profile";
 
 import './Main.css';
 import DoerList from "./pages/DoerList";
+import Job from "./pages/Job";
 
 const {Content, Footer} = Layout;
 
@@ -57,9 +58,11 @@ const Main = () => {
 
                 <Content>
                     <Switch>
-                        <Route exact path={path} component={JobList}/>
-                        <Route exact path={`${path}/doer-list`} component={DoerList}/>
-                        <Route path={`${path}/profile`} component={Profile}/>
+                        <Route exact path={`${path}/job`} component={JobList}/>
+                        <Route exact path={`${path}/job/new`} component={Job}/>
+                        <Route exact path={`${path}/job/:jobId`} component={Job}/>
+                        <Route exact path={`${path}/doer`} component={DoerList}/>
+                        <Route path={`${path}/doer/:id`} component={Profile}/>
                         {/*<Route path={`${path}/all`} component={AllPatients}/>*/}
                         {/*<Route path={`${path}/calendar`} component={() => <Calendar mobile={mobile}/>} />*/}
                         {/*<Route path={`${path}/patient/:folderId`} component={SinglePatient}/>*/}
