@@ -6,12 +6,19 @@ import "../components/LoginForm.css";
 import "../components/RegistrationForm.css";
 import RegistrationForm from "../components/RegistrationForm";
 import LoginForm from "../components/LoginForm";
+import {useHistory} from "react-router";
 
 
 const {Content} = Layout;
 const {useBreakpoint} = Grid;
 
 function LandingPage() {
+    const history = useHistory();
+
+    if (localStorage.accessToken) {
+        history.push('/site/job');
+    }
+
     const screens = useBreakpoint();
     const isMobile = screens.xs;
     const changeOrder = screens.md;

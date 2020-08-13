@@ -40,7 +40,7 @@ const Job = () => {
         try {
             await api.postJob(job);
             message.info('Uspesno ste dodali posao');
-            history.push('job');
+            history.push('/site/job');
         } catch (err) {
             message.error('Posao nije dodan');
         }

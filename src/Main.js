@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Redirect, Route, Switch, useRouteMatch} from "react-router";
+import {Redirect, Route, Switch, useHistory, useRouteMatch} from "react-router";
 import {Affix, Layout} from "antd";
 import HEADER from "./components/Header";
 import MainDrawer from "./components/MainDrawer";
@@ -15,6 +15,8 @@ import Job from "./pages/Job";
 const {Content, Footer} = Layout;
 
 const Main = () => {
+    const history = useHistory();
+
     const [mobile, setMobile] = useState(false);
     const [drawer, setDrawer] = useState(false);
     const [logOut, setLogOut] = useState(false);
@@ -34,6 +36,10 @@ const Main = () => {
     }
 
     let { path } = useRouteMatch();
+
+    if (!localStorage.accessToken) {
+        history.push('/');
+    }
 
     return (
         <Layout style={{minHeight: '100vh'}}>
@@ -63,11 +69,6 @@ const Main = () => {
                         <Route exact path={`${path}/job/:jobId`} component={Job}/>
                         <Route exact path={`${path}/doer`} component={DoerList}/>
                         <Route path={`${path}/doer/:id`} component={Profile}/>
-                        {/*<Route path={`${path}/all`} component={AllPatients}/>*/}
-                        {/*<Route path={`${path}/calendar`} component={() => <Calendar mobile={mobile}/>} />*/}
-                        {/*<Route path={`${path}/patient/:folderId`} component={SinglePatient}/>*/}
-                        {/*<Route path={`${path}/teeth`} component={PatientTeeth}/>*/}
-                        {/*<Route path={`${path}/options`} component={Options}/>*/}
 
                         <Redirect to='/404'/>
                     </Switch>

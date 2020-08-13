@@ -1,40 +1,22 @@
-import {Button, Divider, Form, Input} from "antd";
+import {Button, Divider, Form, Input, message} from "antd";
 import React, {useEffect, useState} from "react";
 import {RegistrationState, Roles} from "../constants";
 import {useHistory} from "react-router";
+import api from "../api";
 
 const axios = require('axios').default;
 
 export const ThirdStepRegistration = (props) => {
+    const history = useHistory();
 
     const [form] = Form.useForm();
-
-    function registerUser(user) {
-        if (props.role === Roles.DOER) {
-            axios.post('http://127.0.0.1:8000/dj-rest-auth/registration/', user.userProfile)
-                .then((resp) => axios.post('http://127.0.0.1:8000/doer/', {
-                    user: resp.data.pk,
-                    birth_date: user.birth_date,
-                    phone_no: user.phone_no
-                })
-                    .then((resp) => console.log(resp.data)));
-        } else {
-            axios.post('http://127.0.0.1:8000/employer/', user.userProfile)
-                .then((resp) => axios.post('http://127.0.0.1:8000/employer/', {
-                    user: resp.data.pk,
-                    birth_date: user.birth_date,
-                    phone_no: user.phone_no
-                }))
-                .then( (resp) => console.log(resp.data));
-        }
-    }
 
     return (
         <Form
             style={{marginTop: '1em'}}
             size='large'
             form={form}
-            onFinish={(values) => {
+            onFinish={async (values) => {
                 const user = {
                     ...props.profile,
                     userProfile: {
@@ -45,7 +27,12 @@ export const ThirdStepRegistration = (props) => {
                         password2: values.password,
                     }
                 };
-                registerUser(user);
+                try {
+                    await api.register(user, props.role);
+                    history.push('site/job');
+                } catch (e) {
+                    message.error('Niste se uspesno registrovali');
+                }
             }}
         >
             <Form.Item

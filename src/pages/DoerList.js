@@ -33,8 +33,8 @@ const DoerList = () => {
                                     }}
                                 >
                                     <List.Item.Meta
-                                        avatar={<Avatar src={item.profilePic} size={60} />}
-                                        title={<span>{item.userProfile.firstName + ' ' + item.user_profile.last_name}</span>}
+                                        avatar={<Avatar src={item.profile_pic} size={60} />}
+                                        title={<span>{item.user_profile.first_name + ' ' + item.user_profile.last_name}</span>}
                                         description={item.average_mark}
                                     />
                                     {item.professions.map(profession => (
