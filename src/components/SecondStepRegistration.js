@@ -12,11 +12,11 @@ export const SecondStepRegistration = (props) => {
             onFinish={(values) => {
                 props.setProfile({
                     ...props.profile,
-                    phoneNo: values.phoneNo,
-                    birthDate: values.birthDate.format('YYYY-MM-DD'),
+                    phone_no: values.phoneNo,
+                    birth_date: values.birthDate.format('YYYY-MM-DD'),
                     userProfile: {
-                        firstName: values.firstName,
-                        lastName: values.lastName,
+                        first_name: values.firstName,
+                        last_name: values.lastName,
                     }
                 });
                 props.setStep(RegistrationState.ProfileInfo);
@@ -24,7 +24,7 @@ export const SecondStepRegistration = (props) => {
         >
             <Form.Item
                 name="firstName"
-                initialValue={props.profile.userProfile.firstName}
+                initialValue={props.profile.userProfile.first_name}
                 rules={[
                     {
                         required: true, message: "Ovo polje ne sme biti prazno",
@@ -42,7 +42,7 @@ export const SecondStepRegistration = (props) => {
 
             <Form.Item
                 name="lastName"
-                initialValue={props.profile.userProfile.lastName}
+                initialValue={props.profile.userProfile.last_name}
                 rules={[
                     {
                         required: true, message: "Ovo polje ne sme biti prazno",
@@ -60,19 +60,19 @@ export const SecondStepRegistration = (props) => {
 
             <Form.Item
                 name="birthDate"
+                initialValue={props.profile.birth_date && moment(props.profile.birth_date)}
                 rules={[
                     {
                         required: true, message: 'Ovo polje ne sme biti prazno'
                     },
                 ]}>
-                {/*TODO: default value when coming back from third step*/}
                 <DatePicker style={{width: '100%'}} placeholder="Datum rodjenja" locale={locale}
                             format={moment().format('DD-MM-YYYY')}/>
             </Form.Item>
 
             <Form.Item
                 name="phoneNo"
-                initialValue={props.profile.phoneNo}
+                initialValue={props.profile.phone_no}
                 rules={[
                     {
                         type: "string",

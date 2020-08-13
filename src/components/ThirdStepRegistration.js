@@ -5,15 +5,25 @@ import {RegistrationState, Roles} from "../constants";
 const axios = require('axios').default;
 
 export const ThirdStepRegistration = (props) => {
-    const {profile} = props.profile;
     const [form] = Form.useForm();
 
     function registerUser(user) {
         if (props.role === Roles.DOER) {
-            axios.post('http://127.0.0.1:8000/doer/', user)
-                .then(() => alert('DOER GOESS BRRR'));
+            axios.post('http://127.0.0.1:8000/dj-rest-auth/registration/', user.userProfile)
+                .then((resp) => axios.post('http://127.0.0.1:8000/doer/', {
+                    user: resp.data.pk,
+                    birth_date: user.birth_date,
+                    phone_no: user.phone_no
+                })
+                    .then((resp) => console.log(resp.data)));
         } else {
-            axios.post('http://127.0.0.1:8000/employer/', user).then(() => alert('EMPLOYER GOESS BRRR'));
+            axios.post('http://127.0.0.1:8000/employer/', user.userProfile)
+                .then((resp) => axios.post('http://127.0.0.1:8000/employer/', {
+                    user: resp.data.pk,
+                    birth_date: user.birth_date,
+                    phone_no: user.phone_no
+                }))
+                .then( (resp) => console.log(resp.data));
         }
     }
 
@@ -28,12 +38,12 @@ export const ThirdStepRegistration = (props) => {
                     ...props.profile,
                     userProfile: {
                         ...props.profile.userProfile,
+                        email: values.email,
                         username: values.username,
-                        password: values.password,
+                        password1: values.password,
+                        password2: values.password,
                     }
                 };
-
-                console.log(user);
 
                 registerUser(user);
             }}
@@ -52,6 +62,22 @@ export const ThirdStepRegistration = (props) => {
             >
                 <Input
                     placeholder="Korisnicko ime"
+                />
+            </Form.Item>
+            <Form.Item
+                name="email"
+                rules={[
+                    {
+                        required: true, message: "Ovo polje ne sme biti prazno",
+                    },
+                    {
+                        type: "email",
+                        message: 'Unesite ispravan email.'
+                    }
+                ]}
+            >
+                <Input
+                    placeholder="Email"
                 />
             </Form.Item>
             <Form.Item

@@ -15,12 +15,14 @@ function RegistrationForm() {
     const [profile, setProfile] = useState({
             userProfile: {
                 username: '',
-                firstName: '',
-                lastName: '',
-                password: '',
+                first_name: '',
+                last_name: '',
+                email: '',
+                password1: '',
+                password2: '',
             },
-            birthDate: '',
-            phoneNo: ''
+            birth_date: '',
+            phone_no: ''
         }
     );
 
