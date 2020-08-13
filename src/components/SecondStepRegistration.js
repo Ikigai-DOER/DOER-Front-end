@@ -13,10 +13,10 @@ export const SecondStepRegistration = (props) => {
                 props.setProfile({
                     ...props.profile,
                     phoneNo: values.phoneNo,
-                    user: {
+                    birthDate: values.birthDate.format('YYYY-MM-DD'),
+                    userProfile: {
                         firstName: values.firstName,
                         lastName: values.lastName,
-                        birthDate: values.birthDate.format('DD-MM-YYYY'),
                     }
                 });
                 props.setStep(RegistrationState.ProfileInfo);
@@ -24,6 +24,7 @@ export const SecondStepRegistration = (props) => {
         >
             <Form.Item
                 name="firstName"
+                initialValue={props.profile.userProfile.firstName}
                 rules={[
                     {
                         required: true, message: "Ovo polje ne sme biti prazno",
@@ -41,6 +42,7 @@ export const SecondStepRegistration = (props) => {
 
             <Form.Item
                 name="lastName"
+                initialValue={props.profile.userProfile.lastName}
                 rules={[
                     {
                         required: true, message: "Ovo polje ne sme biti prazno",
@@ -63,19 +65,22 @@ export const SecondStepRegistration = (props) => {
                         required: true, message: 'Ovo polje ne sme biti prazno'
                     },
                 ]}>
+                {/*TODO: default value when coming back from third step*/}
                 <DatePicker style={{width: '100%'}} placeholder="Datum rodjenja" locale={locale}
                             format={moment().format('DD-MM-YYYY')}/>
             </Form.Item>
 
             <Form.Item
                 name="phoneNo"
+                initialValue={props.profile.phoneNo}
                 rules={[
                     {
                         type: "string",
+                        required: true,
                         message: 'Unesite Vas broj telefona.'
                     }, {
                         validator: (_, value) => {
-                            if (!value.match(/^(\+\d{1,3})?[\s-/]?\d{2,3}([\s-/]?\d{2,3}){2,3}$/))
+                            if (value && !value.match(/^(\+\d{1,3})?[\s-/]?\d{2,3}([\s-/]?\d{2,3}){2,3}$/))
                                 return Promise.reject("Unesite ispravan broj telefona.");
                             return Promise.resolve();
                         }

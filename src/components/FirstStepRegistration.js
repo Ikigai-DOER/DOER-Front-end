@@ -3,12 +3,25 @@ import React, {useState} from "react";
 import {RegistrationState, Roles} from "../constants";
 
 export const FirstStepRegistration = (props) => {
-    const [role, setRole] = useState(Roles.DOER);
-
     const gridStyle = {
         width: '50%',
         textAlign: 'center',
+        border: '1px solid #e8e5ec'
     };
+
+    const cardStyle = {
+        minWidth: '500px',
+        textAlign: 'center',
+        border : 0
+    }
+
+    const selectedGridStyle = {
+        backgroundColor: '#40A9FF',
+        color: 'white',
+        width: '50%',
+        textAlign: 'center',
+        border: '1px solid #e8e5ec'
+    }
 
     return (
         <Form
@@ -18,25 +31,14 @@ export const FirstStepRegistration = (props) => {
         >
             <Form.Item>
                 <Row justify="center">
-                    {/*<div style={{fontSize: 90, textAlign: 'center', width: '100%'}}>*/}
-                    {/*    {role === Roles.DOER ? 'DOER' : 'EMPLOYER'}*/}
-                    {/*</div>*/}
-                    {/*<Form.Item name="role"*/}
-                    {/*    valuePropName='checked'*/}
-                    {/*>*/}
-                    {/*    <Switch onChange={() => {*/}
-                    {/*        setRole(!role);*/}
-                    {/*        props.setProfileType(!role);*/}
-                    {/*    }}/>*/}
-                    {/*</Form.Item>*/}
                     <Form.Item>
                         <Row>
                             <Col>
-                                <Card title="Ja sam" style={{minWidth: '500px', textAlign: 'center'}}>
-                                    <Card.Grid hoverable={true} style={gridStyle}>
+                                <Card title="Odaberite ulogu" style={cardStyle}>
+                                    <Card.Grid hoverable={true} onClick={() => props.setRole(Roles.DOER)} style={props.role === Roles.DOER ? selectedGridStyle : gridStyle}>
                                         DOER
                                     </Card.Grid>
-                                    <Card.Grid hoverable={true} style={{width: '50%'}}>
+                                    <Card.Grid hoverable={true} onClick={() => props.setRole(Roles.EMPLOYER)} style={props.role === Roles.EMPLOYER ? selectedGridStyle : gridStyle}>
                                         POSLODAVAC
                                     </Card.Grid>
                                 </Card>

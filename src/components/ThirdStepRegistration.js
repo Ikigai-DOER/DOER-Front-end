@@ -1,13 +1,22 @@
 import {Button, Divider, Form, Input} from "antd";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {RegistrationState, Roles} from "../constants";
 
+const axios = require('axios').default;
+
 export const ThirdStepRegistration = (props) => {
-    const [password, setPassword] = useState('');
-
-    const {profile} = props;
-
+    const {profile} = props.profile;
     const [form] = Form.useForm();
+
+    function registerUser(user) {
+        if (props.role === Roles.DOER) {
+            axios.post('http://127.0.0.1:8000/doer/', user)
+                .then(() => alert('DOER GOESS BRRR'));
+        } else {
+            axios.post('http://127.0.0.1:8000/employer/', user).then(() => alert('EMPLOYER GOESS BRRR'));
+        }
+    }
+
 
     return (
         <Form
@@ -15,20 +24,18 @@ export const ThirdStepRegistration = (props) => {
             size='large'
             form={form}
             onFinish={(values) => {
-                props.setProfile({
+                const user = {
                     ...props.profile,
-                    user: {
-                        ...props.profile.user,
+                    userProfile: {
+                        ...props.profile.userProfile,
                         username: values.username,
                         password: values.password,
                     }
-                });
+                };
 
-                if (props.profileType === Roles.DOER) {
-                    alert("DOER REGISTERED");
-                } else {
-                    alert("EMPLOYER REGISTERED");
-                }
+                console.log(user);
+
+                registerUser(user);
             }}
         >
             <Form.Item
