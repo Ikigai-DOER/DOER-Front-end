@@ -1,42 +1,51 @@
-import {Button, Col, Divider, Form, Input} from "antd";
-import React, {useState} from "react";
+import {Button, Divider, Form, Input} from "antd";
+import React, {useEffect, useState} from "react";
 import {RegistrationState, Roles} from "../constants";
 import {useHistory} from "react-router";
 
-export const ThirdStepRegistration = (props) => {
-    const history = useHistory();
+const axios = require('axios').default;
 
-    const [password, setPassword] = useState('');
+export const ThirdStepRegistration = (props) => {
+
+    const [form] = Form.useForm();
+
+    function registerUser(user) {
+        if (props.role === Roles.DOER) {
+            axios.post('http://127.0.0.1:8000/dj-rest-auth/registration/', user.userProfile)
+                .then((resp) => axios.post('http://127.0.0.1:8000/doer/', {
+                    user: resp.data.pk,
+                    birth_date: user.birth_date,
+                    phone_no: user.phone_no
+                })
+                    .then((resp) => console.log(resp.data)));
+        } else {
+            axios.post('http://127.0.0.1:8000/employer/', user.userProfile)
+                .then((resp) => axios.post('http://127.0.0.1:8000/employer/', {
+                    user: resp.data.pk,
+                    birth_date: user.birth_date,
+                    phone_no: user.phone_no
+                }))
+                .then( (resp) => console.log(resp.data));
+        }
+    }
 
     return (
         <Form
             style={{marginTop: '1em'}}
             size='large'
-            name="normal_login"
+            form={form}
             onFinish={(values) => {
-                if (values.password !== values.passwordRep) {
-                    alert('Upisite isti password');
-                    return;
-                }
-
-                props.setProfile({
+                const user = {
                     ...props.profile,
-                    user: {
-                        ...props.profile.user,
+                    userProfile: {
+                        ...props.profile.userProfile,
+                        email: values.email,
                         username: values.username,
-                        password: values.password,
+                        password1: values.password,
+                        password2: values.password,
                     }
-                });
-
-                if (props.profileType === Roles.DOER) {
-                    // alert("DOER REGISTERED");
-                    history.push('/site/job');
-                } else {
-                    // alert("EMPLOYER REGISTERED");
-                    history.push('/site/job');
-                }
-
-                console.log(props.profile);
+                };
+                registerUser(user);
             }}
         >
             <Form.Item
@@ -56,11 +65,30 @@ export const ThirdStepRegistration = (props) => {
                 />
             </Form.Item>
             <Form.Item
+                name="email"
+                rules={[
+                    {
+                        required: true, message: "Ovo polje ne sme biti prazno",
+                    },
+                    {
+                        type: "email",
+                        message: 'Unesite ispravan email.'
+                    }
+                ]}
+            >
+                <Input
+                    placeholder="Email"
+                />
+            </Form.Item>
+            <Form.Item
                 name="password"
                 rules={[
                     {
                         required: true, message: 'Ovo polje mora biti ispunjeno.'
-                    }
+                    },
+                    {
+                        min: 8, message: 'Lozinka mora imati makar 8 karaktera.'
+                    },
                 ]}
             >
                 <Input.Password
@@ -74,6 +102,16 @@ export const ThirdStepRegistration = (props) => {
                 rules={[
                     {
                         required: true, message: 'Ovo polje mora biti ispunjeno.'
+                    },
+                    {
+                        min: 8, message: 'Lozinka mora imati makar 8 karaktera.'
+                    },
+                    {
+                        validator: (_, value) => {
+                            if (value !== form.getFieldValue('password'))
+                                return Promise.reject('Lozinke moraju biti istovetne.');
+                            return Promise.resolve();
+                        }
                     }
                 ]}
             >
@@ -90,6 +128,8 @@ export const ThirdStepRegistration = (props) => {
 
                 <Divider/>
 
+            </Form.Item>
+            <Form.Item>
                 <Button type='default'
                         size='large'
                         style={{width: '100%'}}

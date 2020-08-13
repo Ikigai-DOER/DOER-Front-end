@@ -11,16 +11,18 @@ const {Content} = Layout;
 function RegistrationForm() {
     let history = useHistory();
     const [step, setStep] = useState(RegistrationState.RoleInfo);
-    const [profileType, setProfileType] = useState(Roles.DOER);
+    const [role, setRole] = useState(Roles.DOER);
     const [profile, setProfile] = useState({
-            user: {
+            userProfile: {
                 username: '',
-                firstName: '',
-                lastName: '',
-                birthDate: {},
-                password: '',
+                first_name: '',
+                last_name: '',
+                email: '',
+                password1: '',
+                password2: '',
             },
-            phoneNo: ''
+            birth_date: '',
+            phone_no: ''
         }
     );
 
@@ -32,9 +34,13 @@ function RegistrationForm() {
                 <Row>
                     <Col span={24}>
                         {/*<img src={""} style={{width: '100%'}} alt='conmisi logo'/>*/}
-                        {step === RegistrationState.RoleInfo && <FirstStepRegistration setStep={setStep} setProfileType={setProfileType}/>}
-                        {step === RegistrationState.UserInfo && <SecondStepRegistration setStep={setStep} profile={profile} setProfile={setProfile}/>}
-                        {step === RegistrationState.ProfileInfo && <ThirdStepRegistration setStep={setStep} profile={profile} setProfile={setProfile} profileType={profileType}/>}
+                        {step === RegistrationState.RoleInfo &&
+                        <FirstStepRegistration setStep={setStep} setRole={setRole} role={role}/>}
+                        {step === RegistrationState.UserInfo &&
+                        <SecondStepRegistration setStep={setStep} profile={profile} setProfile={setProfile}/>}
+                        {step === RegistrationState.ProfileInfo &&
+                        <ThirdStepRegistration setStep={setStep} profile={profile} setProfile={setProfile}
+                                               role={role}/>}
 
                         <Steps current={step}>
                             <Step title='Role' description="My role"/>
