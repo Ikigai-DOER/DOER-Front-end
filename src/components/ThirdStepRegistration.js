@@ -1,8 +1,11 @@
 import {Button, Col, Divider, Form, Input} from "antd";
 import React, {useState} from "react";
 import {RegistrationState, Roles} from "../constants";
+import {useHistory} from "react-router";
 
 export const ThirdStepRegistration = (props) => {
+    const history = useHistory();
+
     const [password, setPassword] = useState('');
 
     return (
@@ -26,9 +29,11 @@ export const ThirdStepRegistration = (props) => {
                 });
 
                 if (props.profileType === Roles.DOER) {
-                    alert("DOER REGISTERED");
+                    // alert("DOER REGISTERED");
+                    history.push('/site/job');
                 } else {
-                    alert("EMPLOYER REGISTERED");
+                    // alert("EMPLOYER REGISTERED");
+                    history.push('/site/job');
                 }
 
                 console.log(props.profile);

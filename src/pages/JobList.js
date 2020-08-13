@@ -1,8 +1,8 @@
-import React, {useState} from "react";
-import {Affix, Alert, Avatar, Col, Input, List, Row, Select, Spin, Tag} from "antd";
+import React from "react";
+import {Affix, Alert, Avatar, Button, Col, Input, List, Row, Select, Spin, Tag} from "antd";
 import './JobList.css';
 import {useHistory} from "react-router";
-import {useApi} from "../utils";
+import {formatCurrency, useApi} from "../utils";
 import api from "../api";
 import {Link} from "react-router-dom";
 import Availability from "../components/Availability";
@@ -10,16 +10,30 @@ import moment from "moment";
 
 const { Option } = Select;
 
-const JobList = props => {
+const JobList = () => {
 
     let history = useHistory();
 
-    const [{ data: professions }] = useApi(api.getProfessions(), []);
-    const [filters, setFilters] = useState([])
-    const [{data, isLoading, isError}, setFn] = useApi(api.getFilteredJobs(), []);
+    const [{ data: professions }] = useApi(() => api.getProfessions(), []);
+    const [{data, isLoading, isError}, setFn] = useApi(() => api.getJobs(), []);
+
+    const changeFilters = filters => {
+        if (filters.length === 0) {
+            setFn(api.getJobs());
+        } else {
+            setFn(api.getFilteredJobs(filters));
+        }
+    };
 
     return (
         <div className="job-list">
+            <Button
+                type="primary"
+                style={{ position: 'fixed', bottom: 30, right: 30 }}
+                onClick={() => history.push('/site/job/new')}
+            >
+                Dodaj posao
+            </Button>
             <Affix offsetTop={70}>
                 <div className="search">
                     <Input placeholder="Pretraga" className="search-input" />
@@ -27,7 +41,7 @@ const JobList = props => {
                         mode="multiple"
                         style={{ width: '100%' }}
                         placeholder="Please select"
-                        onChange={value => console.log('VALUE', value)}
+                        onChange={changeFilters}
                     >
                         {professions && professions.map(p => <Option key={p.title} value={p.title}>{p.title}</Option>)}
                     </Select>
@@ -47,17 +61,34 @@ const JobList = props => {
                             >
                                 <List.Item
                                     onClick={() => {
-                                        history.push(`site/job/${item.id}`); // TODO: change id to something
+                                        history.push(`job/${item.id}`); // TODO: change id to something
                                     }}
                                 >
                                     <List.Item.Meta
-                                        avatar={<Avatar src={item.employer.profilePic} />}
-                                        title={<a href={item.href}>{item.title}</a>}
+                                        avatar={<Avatar src={item.employer.profilePic} size={60} />}
+                                        title={
+                                            <Row justify="space-between">
+                                                <Col>
+                                                    <a href={item.href}>{item.title}</a>
+                                                </Col>
+                                                <Col>
+                                                    {item.price &&
+                                                        <h3>{formatCurrency(item.price)}</h3>
+                                                    }
+                                                </Col>
+                                            </Row>
+                                        }
                                         description={item.description}
                                     />
                                     <Row style={{marginBottom: 18}} justify="space-between">
                                         <Col>
-                                            <Link to={`/site/profile/${'username'}`}>{item.employer.userProfile.firstName + ' ' + item.employer.userProfile.lastName}</Link>
+                                            {item?.employer?.userProfile &&
+                                                <Link to={`/site/profile/${'username'}`}>
+                                                    <i className="fas fa-user" />
+                                                    &nbsp;&nbsp;
+                                                    {item.employer.userProfile.firstName + ' ' + item.employer.userProfile.lastName}
+                                                </Link>
+                                            }
                                         </Col>
                                         <Col>
                                             <Availability availability={item.status} />

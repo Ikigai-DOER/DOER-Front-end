@@ -14,3 +14,9 @@
 .profile p {
     font-size: 1.5rem;
 }
+
+.profile .rating {
+    background-color: white;
+    padding: 0 12px;
+    border-radius: 20px;
+}

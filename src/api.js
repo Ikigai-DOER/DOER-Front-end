@@ -15,6 +15,8 @@ export default {
     getDoers: () => axios.get('doer/'),
     getDoer: id => axios.get(`doer/${id}`),
     getJobs: () => axios.get('request/'),
+    getJob: id => axios.get(`request/${id}/`),
     getProfessions: () => axios.get('profession/'),
-    getFilteredJobs: (professions) => axios.get('request-search/', { params: {professions: 'tesar'} }),
+    getFilteredJobs: professions => axios.get('request-search/', { params: { professions: professions.join() } }),
+    postJob: job => axios.post('request/', { job }),
 };
