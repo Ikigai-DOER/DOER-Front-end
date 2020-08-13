@@ -1,0 +1,57 @@
+.new-job {
+}
+
+.new-job .content {
+    background-color: white;
+    width: 70%;
+    margin: 20px auto auto auto;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.new-job .content > * {
+    width: 100%;
+}
+
+.new-job .content p {
+    padding: 5px 0;
+}
+
+.new-job .content .profesije-txt {
+    /*padding-bottom: 15px;*/
+    margin-top: -6px;
+}
+
+.new-job .tag {
+    border-radius: 20px;
+    padding: 2px 10px;
+}
+
+.new-job .radio {
+    display: flex;
+}
+
+.new-job .radio * {
+    flex: 1;
+    text-align: center;
+}
+
+.new-job .A {
+    color: green;
+    background-color: lightgreen;
+}
+
+.new-job .P {
+    color: blue;
+    background-color: lightblue;
+}
+
+.new-job .D {
+    color: black;
+    background-color: grey;
+}
+
+.new-job .C {
+    color: red;
+    background-color: lightpink;
+}

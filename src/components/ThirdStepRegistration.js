@@ -1,10 +1,12 @@
 import {Button, Divider, Form, Input} from "antd";
 import React, {useEffect, useState} from "react";
 import {RegistrationState, Roles} from "../constants";
+import {useHistory} from "react-router";
 
 const axios = require('axios').default;
 
 export const ThirdStepRegistration = (props) => {
+
     const [form] = Form.useForm();
 
     function registerUser(user) {
@@ -27,7 +29,6 @@ export const ThirdStepRegistration = (props) => {
         }
     }
 
-
     return (
         <Form
             style={{marginTop: '1em'}}
@@ -44,7 +45,6 @@ export const ThirdStepRegistration = (props) => {
                         password2: values.password,
                     }
                 };
-
                 registerUser(user);
             }}
         >

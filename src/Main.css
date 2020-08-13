@@ -1,0 +1,39 @@
+.mobile-drawer-icon {
+    font-size: 2em;
+    transform: translate(-30px, 5px);
+}
+
+.main-sider {
+    min-height: 100vh;
+    height: 100vh;
+}
+
+.main-menu li {
+    /*Had to overload this cause it won't line up by deafult cause of ant design*/
+    /*For real these fuckers have it misalligned even in the docs*/
+    margin-top: 0 !important;
+    font-size: 1rem !important;
+}
+
+.main-header {
+    background-color: white;
+}
+
+.main-footer {
+    margin-top: 2em;
+    text-align: center;
+    background-color: white;
+    height: 7vh;
+}
+
+.mobile-drawer-icon:hover {
+    color: #DE86B1;
+    transition: 0.3s all ease-in-out;
+}
+
+@media only screen and (max-width: 768px) {
+    .main .content {
+        margin: 0;
+        background: white;
+    }
+}
