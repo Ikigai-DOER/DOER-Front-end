@@ -29,8 +29,10 @@ export const ThirdStepRegistration = (props) => {
                 };
                 try {
                     await api.register(user, props.role);
-                    history.push('site/job');
-                } catch (e) {
+                    history.push('/');
+                    message.info('Uspesno ste se registrovali');
+                } catch (_) {
+                    history.push('/');
                     message.error('Niste se uspesno registrovali');
                 }
             }}
@@ -110,18 +112,25 @@ export const ThirdStepRegistration = (props) => {
 
             <Form.Item>
                 <Button type="primary" htmlType="submit" size='large' style={{width: '100%'}}>
-                    Dalje
+                    {'Dalje >'}
                 </Button>
-
-                <Divider/>
-
             </Form.Item>
             <Form.Item>
                 <Button type='default'
                         size='large'
                         style={{width: '100%'}}
                         onClick={() => props.setStep(RegistrationState.UserInfo)}>
-                    Nazad
+                    {'< Nazad'}
+                </Button>
+            </Form.Item>
+            <Divider/>
+            <Form.Item>
+                <Button type='dashed'
+                        size='large'
+                        style={{width: '100%'}}
+                        onClick={() => props.goToRegister(false)}
+                >
+                    Ulogujte se
                 </Button>
             </Form.Item>
         </Form>

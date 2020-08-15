@@ -55,7 +55,7 @@ export const FirstStepRegistration = (props) => {
 
             <Form.Item>
                 <Button type="primary" htmlType="submit" size='large' style={{width: '100%'}}>
-                    Dalje
+                    {'Dalje >'}
                 </Button>
             </Form.Item>
 

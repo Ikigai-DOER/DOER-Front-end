@@ -38,10 +38,11 @@ function RegistrationForm(props) {
                         <FirstStepRegistration setStep={setStep} setRole={setRole} role={role}
                                                goToRegister={props.goToRegister}/>}
                         {step === RegistrationState.UserInfo &&
-                        <SecondStepRegistration setStep={setStep} profile={profile} setProfile={setProfile}/>}
+                        <SecondStepRegistration setStep={setStep} profile={profile} setProfile={setProfile}
+                                                goToRegister={props.goToRegister}/>}
                         {step === RegistrationState.ProfileInfo &&
                         <ThirdStepRegistration setStep={setStep} profile={profile} setProfile={setProfile}
-                                               role={role}/>}
+                                               role={role} goToRegister={props.goToRegister}/>}
 
                         <Steps current={step}>
                             <Step title='Role' description="My role"/>
