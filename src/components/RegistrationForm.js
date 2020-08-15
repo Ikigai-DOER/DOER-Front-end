@@ -8,7 +8,7 @@ import {ThirdStepRegistration} from "./ThirdStepRegistration";
 
 const {Content} = Layout;
 
-function RegistrationForm() {
+function RegistrationForm(props) {
     let history = useHistory();
     const [step, setStep] = useState(RegistrationState.RoleInfo);
     const [role, setRole] = useState(Roles.DOER);
@@ -35,7 +35,8 @@ function RegistrationForm() {
                     <Col span={24}>
                         {/*<img src={""} style={{width: '100%'}} alt='conmisi logo'/>*/}
                         {step === RegistrationState.RoleInfo &&
-                        <FirstStepRegistration setStep={setStep} setRole={setRole} role={role}/>}
+                        <FirstStepRegistration setStep={setStep} setRole={setRole} role={role}
+                                               goToRegister={props.goToRegister}/>}
                         {step === RegistrationState.UserInfo &&
                         <SecondStepRegistration setStep={setStep} profile={profile} setProfile={setProfile}/>}
                         {step === RegistrationState.ProfileInfo &&

@@ -12,7 +12,7 @@ import {useHistory} from "react-router";
 const {Content} = Layout;
 const {useBreakpoint} = Grid;
 
-function LandingPage() {
+function LandingPage(props) {
     const history = useHistory();
 
     if (localStorage.accessToken) {
@@ -24,16 +24,14 @@ function LandingPage() {
     const changeOrder = screens.md;
     const [openRegisterForm, setOpenRegisterForm] = useState(false);
 
-    useEffect(() => {
-        if (openRegisterForm)
-            alert("ti bi da se registrujes seljak jelj");
-    }, [openRegisterForm]);
-
     return (
         <Layout>
             <Content style={{backgroundColor: "white"}}>
-                {/*<LoginForm goToRegister={setOpenRegisterForm} isMobile={isMobile} changeOrder={changeOrder}/>*/}
-                <RegistrationForm goToRegister={setOpenRegisterForm} isMobile={isMobile} changeOrder={changeOrder}/>
+                {openRegisterForm ?
+                    <RegistrationForm goToRegister={setOpenRegisterForm} isMobile={isMobile} changeOrder={changeOrder}/>
+                    :
+                    <LoginForm goToRegister={setOpenRegisterForm} isMobile={isMobile} changeOrder={changeOrder}/>
+                }
             </Content>
         </Layout>
     );
