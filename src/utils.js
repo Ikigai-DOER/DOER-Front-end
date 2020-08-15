@@ -27,30 +27,4 @@ export const useApi = (apiFn, initialData) => {
     return [{ data, isLoading, isError }, setFn];
 };
 
-export const getAvailabilityString = availability => {
-    switch (availability) {
-        case 'A':
-            return 'Available';
-        case 'C':
-            return 'Closed';
-        case 'D':
-            return 'Done';
-        default:
-            return 'In progress';
-    }
-};
-
-export const getAvailabilityColor = availability => {
-    switch (availability) {
-        case 'A':
-            return 'green';
-        case 'C':
-            return 'red';
-        case 'D':
-            return 'grey';
-        default:
-            return 'blue';
-    }
-};
-
 export const formatCurrency = amount => +amount + '€';

@@ -29,6 +29,9 @@ const Job = () => {
 
     const [{data, isLoading, isError}, setFn] = useApi(() => getJobFn(), {});
 
+    // if (isError) {
+    //     history.push('/site/job');
+    // }
 
     const changeFilters = filters => {
         setSelectedProfessions(filters);

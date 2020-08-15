@@ -11,6 +11,7 @@ import Profile from "./pages/Profile";
 import './Main.css';
 import DoerList from "./pages/DoerList";
 import Job from "./pages/Job";
+import Employer from "./pages/Employer";
 
 const {Content, Footer} = Layout;
 
@@ -64,10 +65,12 @@ const Main = () => {
 
                 <Content>
                     <Switch>
-                        <Route exact path={`${path}/job`} component={JobList}/>
                         <Route exact path={`${path}/job/new`} component={Job}/>
                         <Route exact path={`${path}/job/:jobId`} component={Job}/>
+                        <Route exact path={`${path}/personal`} component={JobList}/>
+                        <Route exact path={`${path}/job`} component={JobList}/>
                         <Route exact path={`${path}/doer`} component={DoerList}/>
+                        <Route exact path={`${path}/employer`} component={Employer}/>
                         <Route path={`${path}/doer/:id`} component={Profile}/>
 
                         <Redirect to='/404'/>

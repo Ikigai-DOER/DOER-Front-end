@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {Affix, Alert, Avatar, Button, Col, Input, List, Row, Select, Spin, Tag} from "antd";
 import './JobList.css';
 import {useHistory} from "react-router";
@@ -13,23 +13,39 @@ const { Option } = Select;
 const JobList = () => {
 
     let history = useHistory();
+    const personal = history.location.pathname.includes('personal');
+
+    const jobFn = personal ? api.getPersonalJobs() : api.getJobs();
 
     const [{ data: professions }] = useApi(() => api.getProfessions(), []);
-    const [{data, isLoading, isError}, setFn] = useApi(() => api.getJobs(), []);
+    const [{data, isLoading, isError}, setFn] = useApi(() => jobFn, []);
+
+    const [filters, setFilters] = useState(professions);
 
     const changeFilters = filters => {
-        if (filters.length === 0) {
-            setFn(api.getJobs());
+        if (!personal) {
+            if (filters.length === 0) {
+                setFn(api.getJobs());
+            } else {
+                setFn(api.getFilteredJobs(filters));
+            }
         } else {
-            setFn(api.getFilteredJobs(filters));
+            setFilters(filters);
         }
     };
+
+    const filterData = () =>
+        filters.length === 0
+            ? data
+            : data
+                .filter(job => job.professions
+                    .filter(p => filters.includes(p)).length > 0);
 
     return (
         <div className="job-list">
             <Button
                 type="primary"
-                style={{ position: 'fixed', bottom: 30, right: 30 }}
+                style={{ position: 'fixed', bottom: 30, right: 30, zIndex: 3 }}
                 onClick={() => history.push('/site/job/new')}
             >
                 Dodaj posao
@@ -53,11 +69,11 @@ const JobList = () => {
                     <List
                         itemLayout="vertical"
                         size="large"
-                        dataSource={data}
+                        dataSource={!personal ? data : filterData()}
                         renderItem={item => (
                             <div
                                 className="list-item"
-                                key={item.title} // TODO: treba neki id
+                                key={item.id} // TODO: treba neki id
                             >
                                 <List.Item
                                     onClick={() => {
@@ -65,7 +81,7 @@ const JobList = () => {
                                     }}
                                 >
                                     <List.Item.Meta
-                                        avatar={<Avatar src={item.employer.profilePic} size={60} />}
+                                        avatar={<Avatar src={item.employer.profile_pic} size={60} />}
                                         title={
                                             <Row justify="space-between">
                                                 <Col>
@@ -82,11 +98,11 @@ const JobList = () => {
                                     />
                                     <Row style={{marginBottom: 18}} justify="space-between">
                                         <Col>
-                                            {item?.employer?.userProfile &&
+                                            {item?.employer?.user_profile &&
                                                 <Link to={`/site/profile/${'username'}`}>
                                                     <i className="fas fa-user" />
                                                     &nbsp;&nbsp;
-                                                    {item.employer.userProfile.firstName + ' ' + item.employer.userProfile.lastName}
+                                                    {item.employer.user_profile.first_name + ' ' + item.employer.user_profile.last_name}
                                                 </Link>
                                             }
                                         </Col>
@@ -110,7 +126,7 @@ const JobList = () => {
                                             ))}
                                         </Col>
                                         <Col>
-                                            <p>{moment(item.publicationDate).format('DD.MM.YYYY. HH:mm')}</p>
+                                            <p>{moment(item.publication_date).format('DD.MM.YYYY. HH:mm')}</p>
                                         </Col>
                                     </Row>
                                 </List.Item>

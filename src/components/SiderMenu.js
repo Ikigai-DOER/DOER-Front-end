@@ -7,7 +7,7 @@ import {useHistory, useLocation} from "react-router";
 import {Menu} from "antd";
 
 //Ant icons
-import {CalendarOutlined, SearchOutlined, UserOutlined} from "@ant-design/icons";
+import {UnorderedListOutlined, SearchOutlined, UserOutlined} from "@ant-design/icons";
 
 function SiderMenu() {
     let history = useHistory();
@@ -20,7 +20,7 @@ function SiderMenu() {
 
     if (location.pathname.includes('doer')) {
         defaultKeys = 1;
-    } else if (location.pathname.includes('nesto')) {
+    } else if (location.pathname.includes('personal')) {
         defaultKeys = 2;
     } else {
         defaultKeys = 0;
@@ -29,7 +29,7 @@ function SiderMenu() {
     useEffect(() => {
         if (location.pathname.includes('doer')) {
             setSelectedKey(1);
-        } else if (location.pathname.includes('nesto')) {
+        } else if (location.pathname.includes('personal')) {
             setSelectedKey(2);
         } else {
             setSelectedKey(0);
@@ -68,12 +68,12 @@ function SiderMenu() {
         <Menu.Item key="2"
                    style={{marginBottom: '1em'}}
                    onClick={() => {
-                       history.push('/nesto')
+                       history.push('/site/personal')
                        goToTop();
                    }}
         >
-            <CalendarOutlined/>
-            <span>menu item jos neki</span>
+            <UnorderedListOutlined />
+            <span>Moji poslovi</span>
         </Menu.Item>
     </Menu>
 }
