@@ -1,22 +1,32 @@
 import React, {useEffect, useState} from 'react';
-import {Alert, Button, Col, Rate, Row, Space, Spin, Tag} from "antd";
+import {Alert, Button, Col, Rate, Row, Space, Spin, Tag, message} from "antd";
 import DoerAvatar from "../components/DoerAvatar";
 import './Profile.css'
 import {useApi} from "../utils";
 import {useHistory} from "react-router";
+import {useParams} from "react-router-dom";
 import api from "../api";
 
 const Profile = () => {
+    const history = useHistory();
+
+    const { id } = useParams();
+
+    const [{data, isLoading, isError}, setFn] = useApi(() => api.getDoer(id), {});
+
     const [rate, setRate] = useState(0);
 
-    const history = useHistory();
-    const paths = history.location.pathname.split('/')
-    const path = paths[paths.length - 1];
-    console.log(path)
+    useEffect(() => setRate(data.user_rating || 0), [data]);
 
-    const [{data, isLoading, isError}, setFn] = useApi(() => api.getDoer(1), {});
-
-    useEffect(() => setRate(data || 0), [data]);
+    const doRateDoer = async (value) => {
+        try {
+            await api.rateDoer(value, id);
+            message.info('Uspesno ste ocenili DOER-a');
+            setRate(value);
+        } catch (error) {
+            message.error('Greska u ocenjivanju DOER-a');
+        }
+    };
 
     if (isLoading) {
         return (
@@ -77,7 +87,7 @@ const Profile = () => {
                         <div className="rating">
                             <Rate
                                 value={rate}
-                                onChange={() => console.log('rating')}
+                                onChange={doRateDoer}
                             />
                         </div>
                         <p>
