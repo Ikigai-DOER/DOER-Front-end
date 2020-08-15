@@ -1,8 +1,11 @@
 import {Card, Button, Divider, Form, Col, Row, Switch} from "antd";
 import React, {useState} from "react";
 import {RegistrationState, Roles} from "../constants";
+import {useHistory} from "react-router";
 
 export const FirstStepRegistration = (props) => {
+    const history = useHistory();
+
     const gridStyle = {
         width: '50%',
         textAlign: 'center',
@@ -12,7 +15,7 @@ export const FirstStepRegistration = (props) => {
     const cardStyle = {
         minWidth: '500px',
         textAlign: 'center',
-        border : 0
+        border: 0
     }
 
     const selectedGridStyle = {
@@ -35,10 +38,12 @@ export const FirstStepRegistration = (props) => {
                         <Row>
                             <Col>
                                 <Card title="Odaberite ulogu" style={cardStyle}>
-                                    <Card.Grid hoverable={true} onClick={() => props.setRole(Roles.DOER)} style={props.role === Roles.DOER ? selectedGridStyle : gridStyle}>
+                                    <Card.Grid hoverable={true} onClick={() => props.setRole(Roles.DOER)}
+                                               style={props.role === Roles.DOER ? selectedGridStyle : gridStyle}>
                                         DOER
                                     </Card.Grid>
-                                    <Card.Grid hoverable={true} onClick={() => props.setRole(Roles.EMPLOYER)} style={props.role === Roles.EMPLOYER ? selectedGridStyle : gridStyle}>
+                                    <Card.Grid hoverable={true} onClick={() => props.setRole(Roles.EMPLOYER)}
+                                               style={props.role === Roles.EMPLOYER ? selectedGridStyle : gridStyle}>
                                         POSLODAVAC
                                     </Card.Grid>
                                 </Card>
@@ -61,8 +66,10 @@ export const FirstStepRegistration = (props) => {
             <Form.Item>
                 <Button type='default'
                         size='large'
-                        style={{width: '100%'}}>
-                    Uloguj se
+                        style={{width: '100%'}}
+                        onClick={() => props.goToRegister(false)}
+                >
+                    Ulogujte se
                 </Button>
             </Form.Item>
         </Form>

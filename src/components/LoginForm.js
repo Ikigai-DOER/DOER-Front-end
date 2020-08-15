@@ -1,19 +1,23 @@
-import React, {useState, useEffect} from 'react'
+import React from 'react'
 import {useHistory} from "react-router";
-import {Row, Col, Form, Input, Button, message, Divider, Layout} from 'antd';
-import {UserOutlined, LockOutlined} from '@ant-design/icons';
+import {Button, Col, Divider, Form, Input, Layout, Row} from 'antd';
+import {LockOutlined, UserOutlined} from '@ant-design/icons';
+import api from "../api";
 
 const {Content} = Layout;
-function LoginForm() {
+
+function LoginForm(props) {
     let history = useHistory();
 
-    const handleOnFinish = value => {};
+    const handleOnFinish = values => {
+        const loginData = {
+            username: values.username,
+            password: values.password
+        };
 
-    const handleValidatePassword = (rule, value) => {
-        if(value && value.length <= 8)
-            return Promise.reject('Ovo polje mora imati vise od 8 karaktera.');
-        return Promise.resolve();
-    }
+        api.login(loginData)
+            .then(() => history.push('/site/job'));
+    };
 
     return <Layout>
         <Content style={{height: '100vh'}} className='content-background'>
@@ -29,15 +33,6 @@ function LoginForm() {
                         >
                             <Form.Item
                                 name="username"
-                                rules={[
-                                    {
-                                        required: true, message: "Ovo polje ne sme biti prazno",
-                                    },
-                                    {
-                                        type: "email",
-                                        message: 'Unesite ispravan email.'
-                                    }
-                                ]}
                             >
                                 <Input
                                     prefix={<UserOutlined/>}
@@ -46,11 +41,6 @@ function LoginForm() {
                             </Form.Item>
                             <Form.Item
                                 name="password"
-                                rules={[
-                                    {
-                                        validator: handleValidatePassword,
-                                    }
-                                ]}
                             >
                                 <Input.Password
                                     prefix={<LockOutlined/>}
@@ -70,7 +60,9 @@ function LoginForm() {
 
                                 <Button type='default'
                                         size='large'
-                                        style={{width: '100%'}}>
+                                        style={{width: '100%'}}
+                                        onClick={() => props.goToRegister(true)}
+                                >
                                     Registrujte se
                                 </Button>
                             </Form.Item>

@@ -1,10 +1,11 @@
 import React from 'react'
 
 //Router
-import { useHistory } from "react-router";
+import {useHistory} from "react-router";
 
 //Ant components
 import {Button, Col, Modal, Row} from "antd";
+import api from "../api";
 
 function LogoutModal(props) {
     let history = useHistory();
@@ -32,7 +33,10 @@ function LogoutModal(props) {
                     block={true}
                     type='primary'
                     size='large'
-                    onClick={() => history.push('/')}
+                    onClick={() => {
+                        api.logout()
+                            .then(() => history.push('/'));
+                    }}
                 >
                     Da
                 </Button>

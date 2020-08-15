@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {Roles} from "./constants";
+import {message} from "antd";
 
 axios.defaults.baseURL = 'http://127.0.0.1:8000/';
 
@@ -18,6 +18,10 @@ const setToken = (access, refresh) => {
     localStorage.refreshToken = refresh;
 };
 
+const removeToken = () => {
+    localStorage.clear();
+};
+
 if (localStorage.accessToken) {
     axios.defaults.headers['Authorization'] = 'Bearer ' + localStorage.accessToken;
 }
@@ -28,8 +32,8 @@ export default {
     getJobs: () => axios.get('request/'),
     getJob: id => axios.get(`request/${id}/`),
     getProfessions: () => axios.get('profession/'),
-    getFilteredJobs: professions => axios.get('request-search/', { params: { professions: professions.join() } }),
-    postJob: job => axios.post('request/', { ...job }),
+    getFilteredJobs: professions => axios.get('request-search/', {params: {professions: professions.join()}}),
+    postJob: job => axios.post('request/', {...job}),
     register: async (userData, role) => {
         const response = await axios.post('dj-rest-auth/registration/', userData.userProfile);
         const accessToken = response.data.access_token;
@@ -43,5 +47,22 @@ export default {
         //     phone_no: userData.phone_no,
         //     birth_date: userData.birth_date
         // });
+    },
+    login: async (loginData) => {
+        try {
+            const response = await axios.post('dj-rest-auth/login/', loginData)
+            const accessToken = response.data.access_token;
+            const refreshToken = response.data.refresh_token;
+            console.log(response.data);
+            setToken(accessToken, refreshToken);
+            message.info('Dobrodošli!')
+        } catch (_) {
+            message.error('Pogrešno uneti podaci, molimo pokušajte ponovo.');
+        }
+    },
+    logout: async () => {
+        // Nepotrebno?
+        return axios.post('dj-rest-auth/logout/')
+            .then(() => removeToken());
     }
 };
