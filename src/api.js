@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {message} from "antd";
+import {Roles} from "./constants";
 
 axios.defaults.baseURL = 'http://127.0.0.1:8000/';
 
@@ -38,18 +39,25 @@ export default {
     rateDoer: (value, id) => axios.post('rate-doer/', null, { params: { rate: value, ratee: +id } }),
     getEmployer: id => axios.get(`employer/${id}/`),
     register: async (userData, role) => {
-        const response = await axios.post('dj-rest-auth/registration/', userData.userProfile);
-        const accessToken = response.data.access_token;
-        const refreshToken = response.data.refresh_token;
-        const user = response.data.user;
-        setToken(accessToken, refreshToken);
+        try {
+            const response = await axios.post('dj-rest-auth/registration/', userData.userProfile);
+            const accessToken = response.data.access_token;
+            const refreshToken = response.data.refresh_token;
+            const user = response.data.user;
+            setToken(accessToken, refreshToken);
 
-        // const path = role === Roles.DOER ? 'doer/' : 'employer/';
-        // await axios.post(path, {
-        //     user: response.data.user.pk,
-        //     phone_no: userData.phone_no,
-        //     birth_date: userData.birth_date
-        // });
+            const path = role === Roles.DOER ? 'doer/' : 'employer/';
+            await axios.post(path, {
+                user_id: user.pk,
+                phone_no: userData.phone_no,
+                birth_date: userData.birth_date
+            });
+
+            removeToken();
+        } catch (error) {
+            message.error(JSON.stringify(error.response.data).replaceAll(/[^\w]/g, " "));
+            message.error('Nije moguca registracija, molimo pokušajte ponovo.');
+        }
     },
     login: async (loginData) => {
         try {
@@ -64,7 +72,6 @@ export default {
         }
     },
     logout: async () => {
-        // Nepotrebno?
         return axios.post('dj-rest-auth/logout/')
             .then(() => removeToken());
     }

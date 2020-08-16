@@ -3,8 +3,11 @@ import React from "react";
 import locale from "antd/es/time-picker/locale/sr_RS";
 import {RegistrationState} from "../constants";
 import moment from "moment";
+import {useHistory} from "react-router";
 
 export const SecondStepRegistration = (props) => {
+    const history = useHistory();
+
     return (
         <Form
             style={{marginTop: '1em'}}
@@ -94,17 +97,25 @@ export const SecondStepRegistration = (props) => {
 
             <Form.Item>
                 <Button type="primary" htmlType="submit" size='large' style={{width: '100%'}}>
-                    Dalje
+                    {'Dalje >'}
                 </Button>
-
-                <Divider/>
             </Form.Item>
             <Form.Item>
                 <Button type='default'
                         size='large'
                         style={{width: '100%'}}
                         onClick={() => props.setStep(RegistrationState.RoleInfo)}>
-                    Nazad
+                    {'< Nazad'}
+                </Button>
+            </Form.Item>
+            <Divider/>
+            <Form.Item>
+                <Button type='dashed'
+                        size='large'
+                        style={{width: '100%'}}
+                        onClick={() => props.goToRegister(false)}
+                >
+                    Ulogujte se
                 </Button>
             </Form.Item>
         </Form>
