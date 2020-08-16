@@ -7,7 +7,7 @@ import {Dropdown, Layout, Button} from "antd";
 import {DownOutlined, MenuOutlined, UserOutlined} from "@ant-design/icons";
 
 //Logo
-import logo from "../logo.svg";
+import logo from "../logos/doer2.svg";
 
 //Components
 import MainMenu from "./MainMenu";
@@ -29,12 +29,14 @@ function HEADER(props) {
                         className='mobile-drawer-icon'
                     />
 
-                    <img style={{width: '20%'}}
+                    <img style={{height: 20}}
                          src={logo} alt='logo'/>
                 </div>
                 :
                 <img style={{
-                    width: '240px',
+                    height: 54,
+                    marginTop: 6,
+                    marginLeft: 36,
                     position: 'absolute',
                     left: '0',
                 }}
