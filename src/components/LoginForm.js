@@ -2,7 +2,7 @@ import React from 'react'
 import {useHistory} from "react-router";
 import {Button, Col, Divider, Form, Input, Layout, Row} from 'antd';
 import {LockOutlined, UserOutlined} from '@ant-design/icons';
-import logo from "../logo/doer2.svg"
+import logo from "../logos/doer2.svg";
 import api from "../api";
 
 const {Content} = Layout;
