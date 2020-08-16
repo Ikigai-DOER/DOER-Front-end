@@ -13,26 +13,53 @@ const { Option } = Select;
 const JobList = () => {
 
     let history = useHistory();
-    const personal = history.location.pathname.includes('personal');
+    const personalPath = history.location.pathname.includes('personal');
+    const [personal, setPersonal] = useState(personalPath);
+    useEffect(() => {
+        if (personalPath !== personal) {
+            setPersonal(personalPath);
+        }
+    }, [personalPath])
 
-    const jobFn = personal ? api.getPersonalJobs() : api.getJobs();
-
-    const [{ data: professions }] = useApi(() => api.getProfessions(), []);
-    const [{data, isLoading, isError}, setFn] = useApi(() => jobFn, []);
-
+    const [data, setData] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isError, setIsError] = useState(false);
+    const [professions, setProfessions] = useState([]);
     const [filters, setFilters] = useState(professions);
 
-    const changeFilters = filters => {
-        if (!personal) {
-            if (filters.length === 0) {
-                setFn(api.getJobs());
-            } else {
-                setFn(api.getFilteredJobs(filters));
-            }
-        } else {
-            setFilters(filters);
+    async function fetch() {
+        setIsLoading(true);
+        setIsError(false);
+        try {
+            const response = personal
+                ? await api.getPersonalJobs()
+                : filters.length === 0
+                    ? await api.getJobs()
+                    : await api.getFilteredJobs(filters);
+            setIsLoading(false);
+            setData(response.data);
+        } catch (err) {
+            setIsLoading(false);
+            setIsError(true);
         }
-    };
+    }
+
+    useEffect(() => {
+        async function getProfessions() {
+            try {
+                const result = await api.getProfessions();
+                setProfessions(result.data);
+            } catch (e) {
+
+            }
+        }
+        getProfessions();
+    }, []);
+
+    useEffect(() => {
+        console.debug("USEEFFECT RUNNING");
+        fetch();
+    }, [personal, filters]);
 
     const filterData = () =>
         filters.length === 0
@@ -57,7 +84,7 @@ const JobList = () => {
                         mode="multiple"
                         style={{ width: '100%' }}
                         placeholder="Please select"
-                        onChange={changeFilters}
+                        onChange={setFilters}
                     >
                         {professions && professions.map(p => <Option key={p.title} value={p.title}>{p.title}</Option>)}
                     </Select>

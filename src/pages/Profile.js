@@ -55,7 +55,7 @@ const Profile = () => {
                 justify="start"
             >
                 <Col span={8} flex={1} className="centered-column">
-                    <DoerAvatar status={'online'} src={data.profile_pic} />
+                    <DoerAvatar status={'online'} src={data.profile_pic} alt={data.user_profile.first_name + ' ' + data.user_profile.last_name} />
                 </Col>
                 <Col span={8} flex={1} className="centered-column">
                     <Space align="center">

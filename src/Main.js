@@ -70,6 +70,7 @@ const Main = () => {
                         <Route exact path={`${path}/personal`} component={JobList}/>
                         <Route exact path={`${path}/job`} component={JobList}/>
                         <Route exact path={`${path}/doer`} component={DoerList}/>
+                        <Route exact path={`${path}/employer/:id`} component={Employer}/>
                         <Route exact path={`${path}/employer`} component={Employer}/>
                         <Route path={`${path}/doer/:id`} component={Profile}/>
 
