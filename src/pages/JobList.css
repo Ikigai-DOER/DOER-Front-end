@@ -56,3 +56,37 @@
     z-index: 3;
     box-shadow: 0 0 0 rgba(0,0,0,0.25), 0 5px 10px rgba(0,0,0,0.22);
 }
+
+.job-list .radio {
+    width: 100%;
+}
+
+.job-list .radio-item {
+    width: 20%;
+    text-align: center;
+}
+
+.job-list .S {
+    color: black;
+    background-color: whitesmoke;
+}
+
+.job-list .A {
+    color: green;
+    background-color: lightgreen;
+}
+
+.job-list .P {
+    color: blue;
+    background-color: lightblue;
+}
+
+.job-list .D {
+    color: black;
+    background-color: grey;
+}
+
+.job-list .C {
+    color: red;
+    background-color: lightpink;
+}

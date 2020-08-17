@@ -1,5 +1,20 @@
 import React, {useContext, useEffect, useState} from "react";
-import {Affix, Alert, Avatar, Button, Col, Collapse, Input, List, Row, Select, Spin, Tag} from "antd";
+import {
+    Affix,
+    Alert,
+    Avatar,
+    Button,
+    Col,
+    Collapse,
+    Input,
+    InputNumber,
+    List,
+    Radio,
+    Row,
+    Select,
+    Spin,
+    Tag
+} from "antd";
 import './JobList.css';
 import {useHistory} from "react-router";
 import {formatCurrency} from "../utils";
@@ -8,6 +23,7 @@ import Availability from "../components/Availability";
 import {PlusOutlined} from "@ant-design/icons";
 import moment from "moment";
 import UserContext from "../UserContext";
+import {CSSTransition} from "react-transition-group";
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -30,7 +46,16 @@ const JobList = () => {
     const [professions, setProfessions] = useState([]);
     const [filters, setFilters] = useState(professions);
 
-    const [filtersExpanded, setFiltersExpanded] = useState(false);
+    const [filtersExpanded, setFiltersExpanded] = useState(true);
+    const [selected, setSelected] = useState('A');
+
+    const onMinChanged = (value) => {
+
+    };
+
+    const onMaxChanged = (value) => {
+
+    };
 
     async function fetch() {
         setIsLoading(true);
@@ -101,14 +126,76 @@ const JobList = () => {
                         </Col>
                     </Row>
                     {filtersExpanded &&
-                        <Select
-                            mode="multiple"
-                            style={{ width: '100%' }}
-                            placeholder="Please select"
-                            onChange={setFilters}
-                        >
-                            {professions && professions.map(p => <Option key={p.title} value={p.title}>{p.title}</Option>)}
-                        </Select>
+                        <div>
+                            <Row>
+                                <Col span={4}>
+                                    <p style={{ padding: 4 }}>Profesije:</p>
+                                </Col>
+                                <Col span={20}>
+                                    <Select
+                                        mode="multiple"
+                                        style={{ width: '100%' }}
+                                        placeholder="Please select"
+                                        onChange={setFilters}
+                                    >
+                                        {professions && professions.map(p => <Option key={p.title} value={p.title}>{p.title}</Option>)}
+                                    </Select>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col span={4}>
+                                    <p style={{ padding: 4 }}>Status:</p>
+                                </Col>
+                                <Col span={20}>
+                                    <Radio.Group className="radio" onChange={event => setSelected(event.target.value)} defaultValue="A">
+                                        <Radio.Button value="S" className={"radio-item " + (selected === "S" ? "S" : "")}>Svi</Radio.Button>
+                                        <Radio.Button value="A" className={"radio-item " + (selected === "A" ? "A" : "")}>Available</Radio.Button>
+                                        <Radio.Button value="P" className={"radio-item " + (selected === "P" ? "P" : "")}>In progress</Radio.Button>
+                                        <Radio.Button value="D" className={"radio-item " + (selected === "D" ? "D" : "")}>Done</Radio.Button>
+                                        <Radio.Button value="C" className={"radio-item " + (selected === "C" ? "C" : "")}>Closed</Radio.Button>
+                                    </Radio.Group>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col span={4}>
+                                    <p style={{ padding: 4 }}>Cena:</p>
+                                </Col>
+                                <Col span={20}>
+                                    <Row>
+                                        <Col span={4} offset={8}>
+                                            <p style={{ textAlign: 'center', padding: 5 }}>od:</p>
+                                        </Col>
+                                        <Col span={4}>
+                                            <InputNumber
+                                                defaultValue={10}
+                                                style={{ width: '100%' }}
+                                                min={0}
+                                                formatter={value => `€ ${value}`}
+                                                parser={value => value.replace('€', '')}
+                                                precision={2}
+                                                step={10}
+                                                onChange={onMinChanged}
+                                            />
+                                        </Col>
+                                        <Col span={4}>
+                                            <p style={{ textAlign: 'center', padding: 5 }}>do:</p>
+                                        </Col>
+                                        <Col span={4}>
+                                            <InputNumber
+                                                defaultValue={100}
+                                                style={{ width: '100%' }}
+                                                min={0}
+                                                formatter={value => `€ ${value}`}
+                                                parser={value => value.replace('€', '')}
+                                                precision={2}
+                                                step={10}
+                                                onChange={onMaxChanged}
+                                            />
+                                        </Col>
+                                    </Row>
+                                </Col>
+                            </Row>
+                        </div>
                     }
                 </div>
             </Affix>
