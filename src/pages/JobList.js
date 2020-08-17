@@ -1,18 +1,21 @@
-import React, {useEffect, useState} from "react";
-import {Affix, Alert, Avatar, Button, Col, Input, List, Row, Select, Spin, Tag} from "antd";
+import React, {useContext, useEffect, useState} from "react";
+import {Affix, Alert, Avatar, Button, Col, Collapse, Input, List, Row, Select, Spin, Tag} from "antd";
 import './JobList.css';
 import {useHistory} from "react-router";
-import {formatCurrency, useApi} from "../utils";
+import {formatCurrency} from "../utils";
 import api from "../api";
-import {Link} from "react-router-dom";
 import Availability from "../components/Availability";
+import {PlusOutlined} from "@ant-design/icons";
 import moment from "moment";
+import UserContext from "../UserContext";
 
 const { Option } = Select;
+const { Panel } = Collapse;
 
 const JobList = () => {
 
     let history = useHistory();
+    const { userInfo } = useContext(UserContext);
     const personalPath = history.location.pathname.includes('personal');
     const [personal, setPersonal] = useState(personalPath);
     useEffect(() => {
@@ -26,6 +29,8 @@ const JobList = () => {
     const [isError, setIsError] = useState(false);
     const [professions, setProfessions] = useState([]);
     const [filters, setFilters] = useState(professions);
+
+    const [filtersExpanded, setFiltersExpanded] = useState(false);
 
     async function fetch() {
         setIsLoading(true);
@@ -70,24 +75,41 @@ const JobList = () => {
 
     return (
         <div className="job-list">
-            <Button
-                type="primary"
-                style={{ position: 'fixed', bottom: 30, right: 30, zIndex: 3 }}
-                onClick={() => history.push('/site/job/new')}
-            >
-                Dodaj posao
-            </Button>
+            {userInfo && userInfo?.doer !== null && userInfo.doer === false &&
+                <Button
+                    className="btn-add-job"
+                    type="primary"
+                    onClick={() => history.push('/site/job/new')}
+                    icon={<PlusOutlined />}
+                    >
+                        Dodaj posao
+                    </Button>
+            }
             <Affix offsetTop={70}>
                 <div className="search">
-                    <Input placeholder="Pretraga" className="search-input" />
-                    <Select
-                        mode="multiple"
-                        style={{ width: '100%' }}
-                        placeholder="Please select"
-                        onChange={setFilters}
-                    >
-                        {professions && professions.map(p => <Option key={p.title} value={p.title}>{p.title}</Option>)}
-                    </Select>
+                    <Row justify="space-between">
+                        <Col span={19}>
+                            <Input placeholder="Pretraga" className="search-input" />
+                        </Col>
+                        <Col span={4}>
+                            <Button
+                                style={{ width: '100%' }}
+                                onClick={() => setFiltersExpanded(!filtersExpanded)}
+                            >
+                                {filtersExpanded ? 'Sakrij filtere' : 'Prikazi filtere'}
+                            </Button>
+                        </Col>
+                    </Row>
+                    {filtersExpanded &&
+                        <Select
+                            mode="multiple"
+                            style={{ width: '100%' }}
+                            placeholder="Please select"
+                            onChange={setFilters}
+                        >
+                            {professions && professions.map(p => <Option key={p.title} value={p.title}>{p.title}</Option>)}
+                        </Select>
+                    }
                 </div>
             </Affix>
             {isError &&  <Alert style={{marginTop: 20}} message="Problem u konekciji" type="error" />}
@@ -100,11 +122,11 @@ const JobList = () => {
                         renderItem={item => (
                             <div
                                 className="list-item"
-                                key={item.id} // TODO: treba neki id
+                                key={item.id}
                             >
                                 <List.Item
                                     onClick={() => {
-                                        history.push(`job/${item.id}`); // TODO: change id to something
+                                        history.push(`job/${item.id}`);
                                     }}
                                 >
                                     <List.Item.Meta
@@ -126,11 +148,20 @@ const JobList = () => {
                                     <Row style={{marginBottom: 18}} justify="space-between">
                                         <Col>
                                             {item?.employer?.user_profile &&
-                                                <Link to={`/site/profile/${'username'}`}>
+                                                <p
+                                                    style={{
+                                                        color: '#18abff',
+                                                        cursor: 'pointer'
+                                                    }}
+                                                    onClick={(event) => {
+                                                        event.stopPropagation();
+                                                        history.push(`/site/employer/${item.employer.id}`);
+                                                    }}
+                                                >
                                                     <i className="fas fa-user" />
                                                     &nbsp;&nbsp;
                                                     {item.employer.user_profile.first_name + ' ' + item.employer.user_profile.last_name}
-                                                </Link>
+                                                </p>
                                             }
                                         </Col>
                                         <Col>
@@ -144,7 +175,8 @@ const JobList = () => {
                                                     key={profession}
                                                     color="purple"
                                                     className="tag list-tag"
-                                                    onClick={() => {
+                                                    onClick={(event) => {
+                                                        event.stopPropagation();
                                                         history.push(`/profession/${profession}`);
                                                     }}
                                                 >

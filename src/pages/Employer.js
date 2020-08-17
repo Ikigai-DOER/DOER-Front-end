@@ -1,10 +1,11 @@
-import React from 'react';
-import {Avatar, Col, List, Row, Space, Tag} from "antd";
+import React, {useEffect, useState} from 'react';
+import {Alert, Avatar, Col, List, Row, Space, Spin, Tag} from "antd";
 import {useApi} from "../utils";
 import {useHistory} from "react-router";
-import {Link, useParams} from "react-router-dom";
+import {useParams} from "react-router-dom";
 import api from "../api";
 import './Employer.css';
+import './JobList.css';
 import moment from "moment";
 import DoerStatus from "../components/DoerStatus";
 
@@ -13,39 +14,56 @@ const Employer = () => {
     const { id } = useParams();
 
     const [{data, isLoading, isError}, setFn] = useApi(() => api.getEmployer(id), {});
-    // const []
+    const [favourites, setFavourites] = useState(null);
+
+    const fetchFavourites = async (ids) => {
+        const response = await Promise.all(ids.map(id => api.getDoer(id)));
+        setFavourites(response.map(r => r.data));
+    };
+
+    useEffect(() => {
+        if (!favourites) {
+            if (Object.keys(data).length > 0) {
+                console.log('DATA', data);
+                fetchFavourites(data.favorite_doers);
+            }
+        }
+    }, [data]);
 
     if (isError) {
         return (
-            <p>Error</p>
+            <Alert message="Error" />
         );
     }
 
     if (isLoading) {
         return (
-            <p>Loading</p>
+            <div style={{ width: '100%', marginTop: 120 }}>
+                <Spin spinning={true} style={{ width: '100%' }} />
+            </div>
         );
     }
 
     return (
         <div className="employer">
-            <div>{JSON.stringify(data)}</div>
-            <Row align="middle">
+            <Row align="middle" className="container">
                 <Col span={8} className="centered-column">
                     <Avatar
                         shape="circle"
                         size={200}
-                        src="https://logos-download.com/wp-content/uploads/2016/09/GitHub_logo.png"
-                        alt="Linus Torvalds"
+                        src={data?.user_profile?.profile_pic}
+                        alt={data?.user_profile?.username ?? ''}
                     />
                 </Col>
                 <Col span={8} className="centered-column">
                     <Space align="center">
-                        <Link to={''}>
-                            {data?.user_profile?.username &&
-                                data.user_profile.username
-                            }
-                        </Link>
+                        {data?.user_profile?.username &&
+                            <p style={{ fontSize: '1rem', color: '#18abff' }}>
+                                <i className="fas fa-user" />
+                                    &nbsp;&nbsp;
+                                    {data.user_profile.username}
+                            </p>
+                        }
                     </Space>
                     <br/>
                     <Space align="center">
@@ -82,19 +100,19 @@ const Employer = () => {
                 </Col>
             </Row>
             <div>
-                Favoriti
-                {false &&
-                    <div>
+                <p style={{ width: '100%', textAlign: 'center', marginTop: 30, fontSize: '2em' }}>Favoriti</p>
+                {favourites &&
+                    <div className="job-list">
                         <List
                             itemLayout="vertical"
                             size="large"
-                            dataSource={data}
+                            dataSource={favourites}
                             renderItem={item => (
                                 <div className="list-item">
                                     <List.Item
-                                        key={item.user_profile.username}
+                                        key={item.id}
                                         onClick={() => {
-                                            history.push(`/site/doer/${item.user_profile.id}`);
+                                            history.push(`/site/doer/${item.id}`);
                                         }}
                                     >
                                         <List.Item.Meta

@@ -29,10 +29,9 @@ export const ThirdStepRegistration = (props) => {
                 };
                 try {
                     await api.register(user, props.role);
-                    history.push('/');
+                    props.goToRegister(false);
                     message.info('Uspesno ste se registrovali');
                 } catch (_) {
-                    history.push('/');
                     message.error('Niste se uspesno registrovali');
                 }
             }}

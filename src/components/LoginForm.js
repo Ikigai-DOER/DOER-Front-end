@@ -1,28 +1,37 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import {useHistory} from "react-router";
-import {Button, Col, Divider, Form, Input, Layout, Row} from 'antd';
+import {Button, Col, Divider, Form, Input, Layout, Row, message} from 'antd';
 import {LockOutlined, UserOutlined} from '@ant-design/icons';
 import logo from "../logos/doer2.svg";
 import api from "../api";
+import UserContext from "../UserContext";
 
 const {Content} = Layout;
 
 function LoginForm(props) {
     let history = useHistory();
+    const { userInfo, setUserInfo } = useContext(UserContext);
 
-    const handleOnFinish = values => {
+    const handleOnFinish = async (values) => {
         const loginData = {
             username: values.username,
             password: values.password
         };
 
-        api.login(loginData)
-            .then(() => history.push('/site/job'));
+        try {
+            const userInfo = await api.login(loginData);
+            const response = await api.getUserInfo(userInfo.pk);
+            localStorage.userInfo = JSON.stringify(response.data);
+            setUserInfo(response.data);
+            history.push('/site/job');
+        } catch (err) {
+            message.error('Neuspešno logovanje');
+        }
     };
 
     return <Layout>
         <Content style={{height: '100vh'}} className='content-background'>
-            <div className='login'>
+            <div className='login' style={{ paddingTop: 20 }}>
                 <Row>
                     <Col span={24}>
                         <img src={logo} style={{width: '100%'}} alt='conmisi logo'/>

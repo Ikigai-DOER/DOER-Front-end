@@ -12,6 +12,7 @@ import './Main.css';
 import DoerList from "./pages/DoerList";
 import Job from "./pages/Job";
 import Employer from "./pages/Employer";
+import EmployerList from "./pages/EmployerList";
 
 const {Content, Footer} = Layout;
 
@@ -70,6 +71,7 @@ const Main = () => {
                         <Route exact path={`${path}/personal`} component={JobList}/>
                         <Route exact path={`${path}/job`} component={JobList}/>
                         <Route exact path={`${path}/doer`} component={DoerList}/>
+                        <Route exact path={`${path}/employer`} component={EmployerList}/>
                         <Route exact path={`${path}/employer/:id`} component={Employer}/>
                         <Route exact path={`${path}/employer`} component={Employer}/>
                         <Route path={`${path}/doer/:id`} component={Profile}/>

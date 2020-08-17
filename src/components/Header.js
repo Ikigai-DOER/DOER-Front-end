@@ -1,21 +1,22 @@
-import React from 'react'
+import React, {useContext} from 'react'
 
 //Ant components
-import {Dropdown, Layout, Button} from "antd";
+import {Dropdown, Layout, Button, Avatar} from "antd";
 
 //Ant icon
 import {DownOutlined, MenuOutlined, UserOutlined} from "@ant-design/icons";
 
 //Logo
-import logo from "../logos/doer2.svg";
+import logo from "../logos/doer-white.svg";
 
 //Components
 import MainMenu from "./MainMenu";
+import UserContext from "../UserContext";
 
 const {Header} = Layout;
 
 function HEADER(props) {
-    const username = localStorage.username;
+    const { userInfo } = useContext(UserContext);
 
     return <Header
         className='main-header'
@@ -52,12 +53,15 @@ function HEADER(props) {
             <div>
                 <Dropdown overlay={<MainMenu Logout={props.logout}/>} trigger={'click'}>
                     <div>
-                        <UserOutlined style={{fontSize: '1.5em', padding: '1em'}}/>
-                        <span>
-                        {username}
-                    </span>
-                        <Button type='link'>
-                            <DownOutlined/>
+                        {userInfo?.user?.user_profile
+                            ? <Avatar style={{ marginRight: '1em' }} src={userInfo.user.user_profile.profile_pic} alt={userInfo.user.user_profile.username} />
+                            : <UserOutlined style={{fontSize: '1.5em', padding: '1em'}}/>
+                        }
+                        <span style={{ color: 'white', fontWeight: 'bold' }}>
+                            {userInfo && userInfo.user.user_profile.username}
+                        </span>
+                        <Button type='link' style={{ color: 'white' }}>
+                            <DownOutlined />
                         </Button>
                     </div>
                 </Dropdown>

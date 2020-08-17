@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Alert, Button, Col, Rate, Row, Space, Spin, Tag, message} from "antd";
 import DoerAvatar from "../components/DoerAvatar";
 import './Profile.css'
@@ -6,11 +6,12 @@ import {useApi} from "../utils";
 import {useHistory} from "react-router";
 import {useParams} from "react-router-dom";
 import api from "../api";
+import UserContext from "../UserContext";
 
 const Profile = () => {
     const history = useHistory();
-
     const { id } = useParams();
+    const { userInfo } = useContext(UserContext);
 
     const [{data, isLoading, isError}, setFn] = useApi(() => api.getDoer(id), {});
 
@@ -91,7 +92,7 @@ const Profile = () => {
                             />
                         </div>
                         <p>
-                            {data.average_mark} / 5
+                            {data.average_mark || 0} / 5
                         </p>
                     </Space>
                 </Col>
@@ -100,9 +101,11 @@ const Profile = () => {
             <Row>
                 <Col span={24} className="centered-column">
                     <Space>
-                        <Button type="primary">
-                            Unajmi
-                        </Button>
+                        {userInfo?.doer !== null && userInfo.doer === false &&
+                            <Button type="primary">
+                                Unajmi
+                            </Button>
+                        }
                         <Button type="primary" danger>
                             Prijavi
                         </Button>

@@ -32,7 +32,7 @@ const DoerList = () => {
                                 <List.Item
                                     key={item.user_profile.username}
                                     onClick={() => {
-                                        history.push(`/site/doer/${item.user_profile.id}`);
+                                        history.push(`/site/doer/${item.id}`);
                                     }}
                                 >
                                     <List.Item.Meta
@@ -47,7 +47,7 @@ const DoerList = () => {
                                                 </Col>
                                             </Row>
                                         }
-                                        description={item.average_mark + ' / 5'}
+                                        description={(item.average_mark || 0) + ' / 5'}
                                     />
                                     {item.professions.map(profession => (
                                         <Tag

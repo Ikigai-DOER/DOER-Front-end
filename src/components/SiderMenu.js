@@ -20,8 +20,10 @@ function SiderMenu() {
 
     if (location.pathname.includes('doer')) {
         defaultKeys = 1;
-    } else if (location.pathname.includes('personal')) {
+    } else if (location.pathname.includes('employer')) {
         defaultKeys = 2;
+    } else if (location.pathname.includes('personal')) {
+        defaultKeys = 3;
     } else {
         defaultKeys = 0;
     }
@@ -29,8 +31,10 @@ function SiderMenu() {
     useEffect(() => {
         if (location.pathname.includes('doer')) {
             setSelectedKey(1);
-        } else if (location.pathname.includes('personal')) {
+        } else if (location.pathname.includes('employer')) {
             setSelectedKey(2);
+        } else if (location.pathname.includes('personal')) {
+            setSelectedKey(3);
         } else {
             setSelectedKey(0);
         }
@@ -66,6 +70,16 @@ function SiderMenu() {
             <span>DOER-i</span>
         </Menu.Item>
         <Menu.Item key="2"
+                   style={{marginBottom: '1em'}}
+                   onClick={() => {
+                       history.push('/site/employer')
+                       goToTop();
+                   }}
+        >
+            <UserOutlined/>
+            <span>Poslodavci</span>
+        </Menu.Item>
+        <Menu.Item key="3"
                    style={{marginBottom: '1em'}}
                    onClick={() => {
                        history.push('/site/personal')

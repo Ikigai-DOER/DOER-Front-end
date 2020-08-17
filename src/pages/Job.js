@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {Alert, Button, Col, Form, Input, InputNumber, message, Radio, Row, Select, Spin, Tag} from "antd";
 import './Job.css';
 import api from "../api";
@@ -6,12 +6,14 @@ import {formatCurrency, useApi} from "../utils";
 import {useHistory} from "react-router";
 import {Link, useParams} from "react-router-dom";
 import Availability from "../components/Availability";
+import UserContext from "../UserContext";
 
 const { Option } = Select;
 
 const Job = () => {
     const history = useHistory();
     const { jobId } = useParams();
+    const { userInfo } = useContext(UserContext);
 
     const [{ data: professions }] = useApi(() => api.getProfessions(), []);
     const [selectedProfessions, setSelectedProfessions] = useState([]);
@@ -111,7 +113,7 @@ const Job = () => {
                             </Col>
                             {readOnly && data && data.employer &&
                                 <Col span={4}>
-                                    <Link to={`/site/doer/${'nekiuser'}`}>
+                                    <Link to={`/site/employer/${data.employer.id}`}>
                                         <i className="fas fa-user" />
                                         &nbsp;&nbsp;
                                         {data.employer.user_profile.first_name + ' ' + data.employer.user_profile.last_name}
@@ -184,6 +186,17 @@ const Job = () => {
                                     Nazad
                                 </Button>
                             </Col>
+                            {userInfo?.doer && userInfo.doer === true &&
+                                <Col span={6}>
+                                    <Button
+                                        style={{ width: '100%' }}
+                                        type="primary"
+                                        onClick={() => console.log('Prijavljen posao')}
+                                    >
+                                        Prijavi se za posao
+                                    </Button>
+                                </Col>
+                            }
                             <Col span={6}>
                                 {readOnly
                                     ? <Button

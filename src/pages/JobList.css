@@ -17,6 +17,8 @@
     border-radius: 6px;
     z-index: 3;
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    /*transition: height 2s ease-in-out;*/
+    height: auto;
 }
 
 .job-list .search-input {
@@ -43,4 +45,14 @@
 
 .job-list .list-tag:hover {
     filter: invert(10%);
+}
+
+.job-list .btn-add-job {
+    border-radius: 6px;
+    font-weight: bold;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 3;
+    box-shadow: 0 0 0 rgba(0,0,0,0.25), 0 5px 10px rgba(0,0,0,0.22);
 }

@@ -4,14 +4,14 @@ import {Roles} from "./constants";
 
 axios.defaults.baseURL = 'http://127.0.0.1:8000/';
 
-axios.interceptors.request.use(config => {
-    console.log('REQUEST', config);
-
-    return config;
-}, function (error) {
-    // Do something with request error
-    return Promise.reject(error)
-})
+// axios.interceptors.request.use(config => {
+//     console.log('REQUEST', config);
+//
+//     return config;
+// }, function (error) {
+//     // Do something with request error
+//     return Promise.reject(error)
+// })
 
 const setToken = (access, refresh) => {
     axios.defaults.headers['Authorization'] = 'Bearer ' + access;
@@ -37,7 +37,9 @@ export default {
     getFilteredJobs: professions => axios.get('request-search/', { params: { professions: professions.join() } }),
     postJob: job => axios.post('request/', { ...job }),
     rateDoer: (value, id) => axios.post('rate-doer/', null, { params: { rate: value, ratee: +id } }),
+    getEmployers: () => axios.get('employer/'),
     getEmployer: id => axios.get(`employer/${id}/`),
+    getUserInfo: userId => axios.get('user-info/', { params: { userId } }),
     register: async (userData, role) => {
         try {
             const response = await axios.post('dj-rest-auth/registration/', userData.userProfile);
@@ -64,9 +66,9 @@ export default {
             const response = await axios.post('dj-rest-auth/login/', loginData)
             const accessToken = response.data.access_token;
             const refreshToken = response.data.refresh_token;
-            console.log(response.data);
             setToken(accessToken, refreshToken);
             message.info('Dobrodošli!')
+            return response.data.user;
         } catch (_) {
             message.error('Pogrešno uneti podaci, molimo pokušajte ponovo.');
         }
