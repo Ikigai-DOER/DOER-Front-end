@@ -7,7 +7,7 @@ import {Drawer} from "antd";
 import SiderMenu from "./SiderMenu";
 
 //Logo
-import logo from "../logo.svg";
+import logo from "../logos/doer2.svg";
 
 function MainDrawer(props) {
     return <Drawer

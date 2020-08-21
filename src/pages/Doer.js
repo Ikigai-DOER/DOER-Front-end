@@ -1,14 +1,14 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {Alert, Button, Col, Rate, Row, Space, Spin, Tag, message} from "antd";
 import DoerAvatar from "../components/DoerAvatar";
-import './Profile.css'
+import './Doer.css'
 import {useApi} from "../utils";
 import {useHistory} from "react-router";
 import {useParams} from "react-router-dom";
 import api from "../api";
 import UserContext from "../UserContext";
 
-const Profile = () => {
+const Doer = () => {
     const history = useHistory();
     const { id } = useParams();
     const { userInfo } = useContext(UserContext);
@@ -116,4 +116,4 @@ const Profile = () => {
     );
 };
 
-export default Profile;
+export default Doer;

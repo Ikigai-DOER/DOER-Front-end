@@ -6,13 +6,14 @@ import MainDrawer from "./components/MainDrawer";
 import SIDER from "./components/Sider";
 import LogoutModal from "./components/LogoutModal";
 import JobList from "./pages/JobList";
-import Profile from "./pages/Profile";
+import Doer from "./pages/Doer";
 
 import './Main.css';
 import DoerList from "./pages/DoerList";
 import Job from "./pages/Job";
 import Employer from "./pages/Employer";
 import EmployerList from "./pages/EmployerList";
+import ProfileSettings from "./components/ProfileSettings";
 
 const {Content, Footer} = Layout;
 
@@ -73,8 +74,8 @@ const Main = () => {
                         <Route exact path={`${path}/doer`} component={DoerList}/>
                         <Route exact path={`${path}/employer`} component={EmployerList}/>
                         <Route exact path={`${path}/employer/:id`} component={Employer}/>
-                        <Route exact path={`${path}/employer`} component={Employer}/>
-                        <Route path={`${path}/doer/:id`} component={Profile}/>
+                        <Route path={`${path}/doer/:id`} component={Doer}/>
+                        <Route path={`${path}/settings`} component={ProfileSettings} />
 
                         <Redirect to='/404'/>
                     </Switch>

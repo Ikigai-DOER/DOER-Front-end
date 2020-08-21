@@ -4,7 +4,7 @@ import {useHistory} from "react-router";
 
 import {Layout, Result} from 'antd';
 
-import logo from '../logo.svg'
+import logo from '../logos/doer-white.svg'
 
 const { Header, Content } = Layout;
 
@@ -12,10 +12,10 @@ function NotFound() {
     let history = useHistory();
 
     return <Layout style={{minHeight: '100vh'}}>
-        <Header style={{backgroundColor: 'white'}}>
+        <Header style={{backgroundColor: '#007afc', paddingBottom:'2px'}}>
             <img
                 src={logo} style={{height: '100%', cursor: 'pointer'}}
-                alt='conmisi logo'
+                alt='doer logo'
                 onClick={() => history.push('/')}
             />
         </Header>
