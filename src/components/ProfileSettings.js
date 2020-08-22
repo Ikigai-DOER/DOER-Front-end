@@ -1,18 +1,18 @@
 import React, {useContext} from "react";
 import UserContext from "../UserContext";
+import DoerProfileSettings from "./DoerProfileSettings";
 
 
 const ProfileSettings = (props) => {
     const {userInfo} = useContext(UserContext);
-    console.log(userInfo);
+    console.log(userInfo)
     return (
         // {
         //     userInfo.doer === true ?
-        //     <DoerProfileSettings/>
+        <DoerProfileSettings/>
         //     :
         //     <EmployerProfileSettings/>
         // }
-        <h1>ha</h1>
     )
 }
 

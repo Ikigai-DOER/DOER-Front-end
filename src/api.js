@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {message} from "antd";
 import {Roles} from "./constants";
+import { serialize } from 'object-to-formdata';
 
 axios.defaults.baseURL = 'http://127.0.0.1:8000/';
 
@@ -34,12 +35,21 @@ export default {
     getJob: id => axios.get(`request/${id}/`),
     getPersonalJobs: () => axios.get('personal-requests/'),
     getProfessions: () => axios.get('profession/'),
-    getFilteredJobs: professions => axios.get('request-search/', { params: { professions: professions.join() } }),
-    postJob: job => axios.post('request/', { ...job }),
-    rateDoer: (value, id) => axios.post('rate-doer/', null, { params: { rate: value, ratee: +id } }),
+    getFilteredJobs: professions => axios.get('request-search/', {params: {professions: professions.join()}}),
+    postJob: job => axios.post('request/', {...job}),
+    rateDoer: (value, id) => axios.post('rate-doer/', null, {params: {rate: value, ratee: +id}}),
     getEmployers: () => axios.get('employer/'),
     getEmployer: id => axios.get(`employer/${id}/`),
-    getUserInfo: userId => axios.get('user-info/', { params: { userId } }),
+    getUserInfo: userId => axios.get('user-info/', {params: {userId}}),
+    setDoerProfile: userInfo => {
+        const formData = serialize(userInfo);
+        console.log('salje', userInfo)
+
+        axios.put(`doer/${userInfo.user_profile.id}/`, {
+            ...userInfo,
+            user_id: userInfo.user_profile.id
+        }).then(resp => console.log('RESP', resp));
+    },
     register: async (userData, role) => {
         try {
             const response = await axios.post('dj-rest-auth/registration/', userData.userProfile);

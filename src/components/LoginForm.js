@@ -4,6 +4,7 @@ import {Button, Col, Divider, Form, Input, Layout, Row, message} from 'antd';
 import {LockOutlined, UserOutlined} from '@ant-design/icons';
 import logo from "../logos/doer2.svg";
 import api from "../api";
+import './LoginForm.css';
 import UserContext from "../UserContext";
 
 const {Content} = Layout;
