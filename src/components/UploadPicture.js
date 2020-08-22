@@ -1,70 +1,63 @@
-import React, {useContext, useEffect, useState} from "react";
-import {Upload, message} from 'antd';
-import {LoadingOutlined, PlusOutlined} from '@ant-design/icons';
-import UserContext from "../UserContext";
+import React, { useState } from 'react'
 
-function getBase64(img, callback) {
-    const reader = new FileReader();
-    reader.addEventListener('load', () => callback(reader.result));
-    reader.readAsDataURL(img);
-}
+//This shit is a ANT DESIGN ICON, import it like this
+//or any other icon and put it below
+import { UploadOutlined } from '@ant-design/icons';
+import {Modal} from "antd";
 
-function beforeUpload(file) {
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-    if (!isJpgOrPng) {
-        message.error('You can only upload JPG/PNG file!');
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-        message.error('Image must smaller than 2MB!');
-    }
-    return isJpgOrPng && isLt2M;
-}
+const FileUpload = React.forwardRef((props, ref) => {
+    const [file, setFile] = useState(props.picture);
+    const [bigPicture, setBigPicture] = useState(false);
+    const [error, setError] = useState(false);
 
 
-const UploadPicture = (props) => {
-    const [state, setState] = useState({loading: false, imageUrl: props.imageUrl});
-    const {userInfo} = useContext(UserContext);
+    // const s = useSelector(stringsSelector);
 
-    const handleChange = info => {
-        if (info.file.status === 'uploading') {
-            state.loading = true;
-            return;
+    const handleInput = event => {
+        if(event.target.files[0].type === 'image/png' ||
+            event.target.files[0].type === 'image/jpg' ||
+            event.target.files[0].type === 'image/jpeg') {
+            setError(false);
+            setFile(URL.createObjectURL(event.target.files[0]));
+        } else {
+            setError(true);
         }
-        if (info.file.status === 'done') {
-            // Get this url from response in real world.
-            // getBase64(info.file.originFileObj, _ => {
-            //     setState({
-            //         loading: false,
-            //     });
-            // });
-            setState({loading: false});
-            console.log('slika', info.file.originFileObj)
-            userInfo.user.profile_pic = info.file.originFileObj;
 
-        }
-    };
+        /*Callback to the parent component*/
+        /*props.imgCallBack(event.target.files[0]);*/
+    }
 
-    const uploadButton = (
-        <div>
-            {state.loading ? <LoadingOutlined/> : <PlusOutlined/>}
-            <div className="ant-upload-text">Dodajte sliku</div>
-        </div>
-    );
+    return <div className='upload'>
+        <label className='upload-button'>
+            <input type='file'
+                   ref={ref}
+                   accept={props.accept}
+                   multiple={props.multiple}
+                   onChange={handleInput}
+            >
+            </input>
+            <span>
+                <UploadOutlined style={{marginRight: '6px'}}/>
+                {/*{s.buttonUpload}*/}
+            </span>
+        </label>
+        <span style={{color: '#ff525a'}}>{error ? 'Samo slike!' : null}</span>
+        <img style={{maxHeight: '150px'}}
+             src={file ? file : ''}
+             alt=""
+             onClick={() => setBigPicture(true)}/>
 
-    return (
-        <Upload
-            name="avatar"
-            listType="picture-card"
-            className="avatar-uploader"
-            showUploadList={false}
-            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-            beforeUpload={beforeUpload}
-            onChange={handleChange}
-        >
-            {state.imageUrl ? <img src={state.imageUrl} alt="avatar" style={{width: '100%'}}/> : uploadButton}
-        </Upload>
-    );
-}
+        <Modal
+            onCancel={() => setBigPicture(false)}
+            closable={false}
+            visible={bigPicture}
+            title=""
+            footer={false}>
 
-export default UploadPicture;
+            <img className="big-image" src={file ? file : ''} alt=""/>
+
+        </Modal>
+    </div>
+});
+
+export default FileUpload;

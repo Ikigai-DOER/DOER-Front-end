@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {message} from "antd";
 import {Roles} from "./constants";
-import { serialize } from 'object-to-formdata';
+import {serialize} from 'object-to-formdata';
 
 axios.defaults.baseURL = 'http://127.0.0.1:8000/';
 
@@ -43,16 +43,17 @@ export default {
     getUserInfo: userId => axios.get('user-info/', {params: {userId}}),
     setDoerProfile: userInfo => {
         const formData = serialize(userInfo);
-        console.log('salje', userInfo)
+        formData.delete('user_profile')
+        formData.append('user_id', userInfo.id);
+        formData.append('user_profile', JSON.stringify(userInfo.user_profile))
+        console.log('salje', formData)
 
-        axios.put(`doer/${userInfo.user_profile.id}/`, {
-            ...userInfo,
-            user_id: userInfo.user_profile.id
-        }).then(resp => console.log('RESP', resp));
+        axios.put(`doer/${userInfo.id}/`, formData, {headers: { 'Content-Type': 'multipart/form-data'} })
+            .then(resp => console.log('RESP', resp));
     },
     register: async (userData, role) => {
         try {
-            const response = await axios.post('dj-rest-auth/registration/', userData.userProfile);
+            const response = await axios.post('dj-rest-auth/registration/', userData.user_profile);
             const accessToken = response.data.access_token;
             const refreshToken = response.data.refresh_token;
             const user = response.data.user;
@@ -62,10 +63,12 @@ export default {
             await axios.post(path, {
                 user_id: user.pk,
                 phone_no: userData.phone_no,
-                birth_date: userData.birth_date
+                birth_date: userData.birth_date,
+                user_profile: userData.user_profile,
             });
 
             removeToken();
+            message.info('Uspesno ste se registrovali');
         } catch (error) {
             message.error(JSON.stringify(error.response.data).replaceAll(/[^\w]/g, " "));
             message.error('Nije moguca registracija, molimo pokušajte ponovo.');

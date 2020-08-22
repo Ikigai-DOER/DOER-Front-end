@@ -1,19 +1,21 @@
-import React, {useContext} from 'react';
-import {Button, Col, Divider, Form, Input, Row, Upload} from "antd";
+import React, {useContext, useRef} from 'react';
+import {Button, Col, Divider, Form, Input, Row} from "antd";
 import "./DoerProfileSettings.css";
 import UserContext from "../UserContext";
-import UploadPicture from "./UploadPicture";
 import api from "../api";
+import FileUpload from "./UploadPicture";
 
 
 const DoerProfileSettings = (props) => {
     const {userInfo} = useContext(UserContext);
     const [form] = Form.useForm();
+    const file = useRef(null);
     const userAccount = userInfo.user;
     const userProfile = userAccount.user_profile;
 
     function handleOnFinish(values) {
         const newUserInfo = {
+            ...userInfo.user,
             user_profile: {
                 ...userInfo.user.user_profile,
                 username: values.username,
@@ -21,8 +23,10 @@ const DoerProfileSettings = (props) => {
                 last_name: values.lastName,
                 email: values.email,
             },
+            user_id: userInfo.id,
             birth_date: values.birthDate,
-            phone_no: values.phoneNo
+            phone_no: values.phoneNo,
+            profile_pic: file.current.files[0]
         };
         console.log(values.username);
         api.setDoerProfile(newUserInfo);
@@ -42,7 +46,11 @@ const DoerProfileSettings = (props) => {
                             name="profilePicture"
                             initialValue={userAccount.profile_pic}
                         >
-                            <UploadPicture imageUrl={userAccount.profile_pic}/>
+                            <FileUpload accept={'image/*'}
+                                        ref={file}
+                                        multiple={false}
+                                /*imgCallBack={imgCallBack}*/
+                            />
                         </Form.Item>
                         <Form.Item
                             name="username"
