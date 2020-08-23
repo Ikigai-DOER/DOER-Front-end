@@ -90,7 +90,7 @@ const DoerProfileSettings = (props) => {
         let formData = createFormData(userAccount, user_profile)
 
         try {
-            const resp = await api.setDoerProfile(userInfo.user.id, formData)
+            const resp = await api.setProfileSettings(true, userInfo.user.id, formData)
             setUserInfo({...userInfo, user: resp.data});
             history.push('/');
         } catch (error) {
@@ -108,7 +108,7 @@ const DoerProfileSettings = (props) => {
                         form={form}
                         onFinish={handleOnFinish}
                     >
-                        <Divider>Profilna slika</Divider>
+                        <Divider><i>Profilna slika</i></Divider>
                         <Form.Item
                             name="profilePicture"
                             initialValue={userAccount.profile_pic}
@@ -122,7 +122,7 @@ const DoerProfileSettings = (props) => {
                             </Row>
                         </Form.Item>
 
-                        <Divider> Podaci o profilu</Divider>
+                        <Divider><i>Podaci o profilu</i></Divider>
 
                         <Form.Item
                             name="username"
@@ -261,7 +261,7 @@ const DoerProfileSettings = (props) => {
                         </Form.Item>
                     </Form>
 
-                    <Divider>Lozinka</Divider>
+                    <Divider><i>Lozinka</i></Divider>
                     {/*
                         Password changing form
                     */}

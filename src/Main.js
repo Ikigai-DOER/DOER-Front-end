@@ -13,7 +13,7 @@ import DoerList from "./pages/DoerList";
 import Job from "./pages/Job";
 import Employer from "./pages/Employer";
 import EmployerList from "./pages/EmployerList";
-import ProfileSettings from "./components/ProfileSettings";
+import ProfileSettings from "./pages/ProfileSettings";
 
 const {Content, Footer} = Layout;
 

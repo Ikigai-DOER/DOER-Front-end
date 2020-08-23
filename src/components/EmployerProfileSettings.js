@@ -1,24 +1,28 @@
-import React, {useContext, useRef} from 'react';
-import {Button, Col, Divider, Form, Input, Row} from "antd";
+import React, {useContext, useRef, useState} from 'react';
+import {Button, Col, Divider, Form, Input, Row, Select, Tag} from "antd";
 import "./DoerProfileSettings.css";
 import UserContext from "../UserContext";
 import api from "../api";
 import FileUpload from "./UploadPicture";
-import {BASE_URL} from "../constants";
+import {LockOutlined} from '@ant-design/icons';
+import {useHistory} from "react-router";
+import {useApi} from "../utils";
+import {useParams} from "react-router-dom";
 
+const {Option} = Select;
 
 const DoerProfileSettings = (props) => {
     const {userInfo, setUserInfo} = useContext(UserContext);
     const [form] = Form.useForm();
+    const [formPassword] = Form.useForm();
     const userAccount = userInfo.user;
-    // TODO: this is bad, pls fix
-    if (!userAccount.profile_pic.toString().startsWith('http://'))
-        userAccount.profile_pic = `${BASE_URL}${userAccount.profile_pic}`
-
     const file = useRef(null);
     const userProfile = userAccount.user_profile;
+    const history = useHistory();
+    const {jobId} = useParams();
+    const [{data: professions}] = useApi(() => api.getProfessions(), []);
 
-    function createFormData (userAccount, userProfile) {
+    function createFormData(userAccount, userProfile) {
         const formData = new FormData();
 
         for (let key in userAccount) {
@@ -34,7 +38,17 @@ const DoerProfileSettings = (props) => {
         return formData;
     }
 
-    function handleOnFinish(values) {
+    async function handleOnFinishPassword(values) {
+        const passwordInfo = {
+            new_password1: values.newPassword,
+            new_password2: values.newPassword1,
+        }
+
+        await api.changePassword(passwordInfo);
+        history.push('/');
+    }
+
+    async function handleOnFinish(values) {
         const user_profile = {
             ...userInfo.user.user_profile,
             username: values.username,
@@ -55,9 +69,9 @@ const DoerProfileSettings = (props) => {
         let formData = createFormData(userAccount, user_profile)
 
         try {
-            api.setDoerProfile(userInfo.user.id, formData).then( resp =>
-                setUserInfo({...userInfo, user:resp.data})
-            );
+            const resp = await api.setProfileSettings(false, userInfo.user.id, formData)
+            setUserInfo({...userInfo, user: resp.data});
+            history.push('/');
         } catch (error) {
             console.error(error)
         }
@@ -73,18 +87,21 @@ const DoerProfileSettings = (props) => {
                         form={form}
                         onFinish={handleOnFinish}
                     >
+                        <Divider><i>Profilna slika</i></Divider>
                         <Form.Item
                             name="profilePicture"
                             initialValue={userAccount.profile_pic}
                         >
-                            <FileUpload accept={'image/*'}
-                                        ref={file}
-                                        multiple={false}
-                                        imageUrl={userAccount.profile_pic}
-                            />
+                            <Row align='center'>
+                                <FileUpload accept={'image/*'}
+                                            ref={file}
+                                            multiple={false}
+                                            imageUrl={userAccount.profile_pic}
+                                />
+                            </Row>
                         </Form.Item>
 
-                        <Divider/>
+                        <Divider><i>Podaci o profilu</i></Divider>
 
                         <Form.Item
                             name="username"
@@ -182,35 +199,70 @@ const DoerProfileSettings = (props) => {
                                 placeholder="Broj telefona"
                             />
                         </Form.Item>
-                        <Form.Item
-                            name="professions"
-                            initialValue={userAccount.professions}
-                            rules={[
-                                {required: true, message: 'Ovo polje ne sme biti prazno'},
-                            ]}
-                        >
-                            <Input
-                                placeholder="Profesije"
-                            />
-                        </Form.Item>
-                        <Form.Item
-                            name="availability"
-                            initialValue={userAccount.availability}
-                            rules={[
-                                {required: true, message: 'Ovo polje ne sme biti prazno'},
-                            ]}
-                        >
-                            <Input
-                                placeholder="Dostupnost"
-                            />
-                        </Form.Item>
-                        <Form.Item>
-                            <Divider/>
-                        </Form.Item>
                         <Form.Item>
                             <div style={{textAlign: "center"}}>
                                 <Button htmlType="submit">
                                     Potvrdi izmene
+                                </Button>
+                            </div>
+                        </Form.Item>
+                    </Form>
+
+                    <Divider><i>Lozinka</i></Divider>
+                    {/*
+                        Password changing form
+                    */}
+                    <Form
+                        style={{marginTop: '1em'}}
+                        size='large'
+                        form={formPassword}
+                        onFinish={handleOnFinishPassword}
+                    >
+                        <Form.Item
+                            name="newPassword"
+                            rules={[
+                                {
+                                    required: true, message: 'Ovo polje mora biti ispunjeno.'
+                                },
+                                {
+                                    min: 8, message: 'Lozinka mora imati makar 8 karaktera.'
+                                },
+                            ]}
+                        >
+                            <Input.Password
+                                prefix={<LockOutlined/>}
+                                type="password"
+                                placeholder="Nova lozinka"
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            name="newPassword1"
+                            rules={[
+                                {
+                                    required: true, message: 'Ovo polje mora biti ispunjeno.'
+                                },
+                                {
+                                    min: 8, message: 'Lozinka mora imati makar 8 karaktera.'
+                                },
+                                {
+                                    validator: (_, value) => {
+                                        if (value !== formPassword.getFieldValue('newPassword'))
+                                            return Promise.reject('Lozinke moraju biti istovetne.');
+                                        return Promise.resolve();
+                                    }
+                                }
+                            ]}
+                        >
+                            <Input.Password
+                                prefix={<LockOutlined/>}
+                                type="password"
+                                placeholder="Potvrdite novu lozinku"
+                            />
+                        </Form.Item>
+                        <Form.Item>
+                            <div style={{textAlign: "center"}}>
+                                <Button htmlType="submit">
+                                    Promeni lozinku
                                 </Button>
                             </div>
                         </Form.Item>

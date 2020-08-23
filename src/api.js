@@ -40,9 +40,10 @@ export default {
     getEmployers: () => axios.get('employer/'),
     getEmployer: id => axios.get(`employer/${id}/`),
     getUserInfo: userId => axios.get('user-info/', {params: {userId}}),
-    setDoerProfile: async (id, data) => {
+    setProfileSettings: async (isDoer, id, data) => {
         try {
-            let response = await axios.put(`doer/${id}/`, data);
+            const prefix = isDoer ? 'doer/' : 'employer/';
+            let response = await axios.put(`${prefix}${id}/`, data);
             message.info('Uspesno izmenjene informacije o profilu!');
             return response
         } catch (error) {
