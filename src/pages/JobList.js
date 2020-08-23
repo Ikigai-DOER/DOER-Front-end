@@ -35,6 +35,9 @@ const JobList = () => {
     const personalPath = history.location.pathname.includes('personal');
     const [personal, setPersonal] = useState(personalPath);
     useEffect(() => {
+        document.title = 'Doer App'
+    }, []);
+    useEffect(() => {
         if (personalPath !== personal) {
             setPersonal(personalPath);
         }
@@ -46,7 +49,7 @@ const JobList = () => {
     const [professions, setProfessions] = useState([]);
     const [filters, setFilters] = useState(professions);
 
-    const [filtersExpanded, setFiltersExpanded] = useState(true);
+    const [filtersExpanded, setFiltersExpanded] = useState(false);
     const [selected, setSelected] = useState('A');
 
     const onMinChanged = (value) => {
