@@ -49,6 +49,15 @@ export default {
             message.error(JSON.stringify(error.response.data).replaceAll(/[^\w]/g, " "));
         }
     },
+    changePassword: async (passwordData) => {
+        try {
+            const resp = await axios.post('/dj-rest-auth/password/change/', passwordData);
+            console.debug(resp);
+            message.info('Uspesno izmenjena loznka!');
+        } catch (error) {
+            message.error(JSON.stringify(error.response.data));
+        }
+    },
     register: async (userData, role) => {
         try {
             const response = await axios.post('dj-rest-auth/registration/', userData.user_profile);

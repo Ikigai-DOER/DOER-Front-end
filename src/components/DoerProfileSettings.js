@@ -1,13 +1,16 @@
-import React, {useContext, useRef} from 'react';
-import {Button, Col, Divider, Form, Input, Row} from "antd";
+import React, {useContext, useRef, useState} from 'react';
+import {Button, Col, Divider, Form, Input, Row, Select, Tag} from "antd";
 import "./DoerProfileSettings.css";
 import UserContext from "../UserContext";
 import api from "../api";
 import FileUpload from "./UploadPicture";
-import {LockOutlined, UserOutlined} from '@ant-design/icons';
+import {LockOutlined} from '@ant-design/icons';
+import {useHistory} from "react-router";
+import {useApi} from "../utils";
+import {useParams} from "react-router-dom";
 
+const {Option} = Select;
 
-// TODO: implement change password
 const DoerProfileSettings = (props) => {
     const {userInfo, setUserInfo} = useContext(UserContext);
     const [form] = Form.useForm();
@@ -15,9 +18,33 @@ const DoerProfileSettings = (props) => {
     const userAccount = userInfo.user;
     const file = useRef(null);
     const userProfile = userAccount.user_profile;
+    const history = useHistory();
+    const [selectedProfessions, setSelectedProfessions] = useState([]);
+    const {jobId} = useParams();
+    const [{data: professions}] = useApi(() => api.getProfessions(), []);
+
+    const changeFilters = filters => {
+        setSelectedProfessions(filters);
+    };
+
+    const getJobFn = () => {
+        if (jobId) {
+            return api.getJob(jobId);
+        } else {
+            return Promise.resolve();
+        }
+    };
+
+    const [{data, isLoading, isError}, setFn] = useApi(() => getJobFn(), {});
 
     function createFormData(userAccount, userProfile) {
         const formData = new FormData();
+
+        for (let key in userAccount.professions) {
+            formData.append('professions', userAccount.professions[key]);
+        }
+
+        delete userAccount.professions;
 
         for (let key in userAccount) {
             userAccount[key] !== null &&
@@ -32,11 +59,17 @@ const DoerProfileSettings = (props) => {
         return formData;
     }
 
-    function handleOnFinishPassword(values) {
+    async function handleOnFinishPassword(values) {
+        const passwordInfo = {
+            new_password1: values.newPassword,
+            new_password2: values.newPassword1,
+        }
 
+        await api.changePassword(passwordInfo);
+        history.push('/');
     }
 
-    function handleOnFinish(values) {
+    async function handleOnFinish(values) {
         const user_profile = {
             ...userInfo.user.user_profile,
             username: values.username,
@@ -57,9 +90,9 @@ const DoerProfileSettings = (props) => {
         let formData = createFormData(userAccount, user_profile)
 
         try {
-            api.setDoerProfile(userInfo.user.id, formData).then(resp =>
-                setUserInfo({...userInfo, user: resp.data})
-            );
+            const resp = await api.setDoerProfile(userInfo.user.id, formData)
+            setUserInfo({...userInfo, user: resp.data});
+            history.push('/');
         } catch (error) {
             console.error(error)
         }
@@ -194,9 +227,15 @@ const DoerProfileSettings = (props) => {
                                 {required: true, message: 'Ovo polje ne sme biti prazno'},
                             ]}
                         >
-                            <Input
-                                placeholder="Profesije"
-                            />
+                            {<Select
+                                mode="multiple"
+                                style={{width: '100%'}}
+                                placeholder="Please select"
+                                onChange={changeFilters}
+                            >
+                                {professions && professions.map(p => <Option key={p.title}
+                                                                             value={p.title}>{p.title}</Option>)}
+                            </Select>}
                         </Form.Item>
                         <Form.Item
                             name="availability"
@@ -205,12 +244,13 @@ const DoerProfileSettings = (props) => {
                                 {required: true, message: 'Ovo polje ne sme biti prazno'},
                             ]}
                         >
-                            <Input
-                                placeholder="Dostupnost"
-                            />
-                        </Form.Item>
-                        <Form.Item>
-                            <Divider/>
+                            <Select defaultValue={userAccount.availability} style={{width: '100%'}}>
+                                <Option style={{backgroundColor: '#5cae5c', color: 'white'}}
+                                        value="A">Slobodan</Option>
+                                <Option style={{backgroundColor: '#a02e2e', color: 'white'}} value="B">Zauzet</Option>
+                                <Option style={{backgroundColor: '#aeaeae', color: 'white'}}
+                                        value="U">Nedostupan</Option>
+                            </Select>
                         </Form.Item>
                         <Form.Item>
                             <div style={{textAlign: "center"}}>
@@ -220,22 +260,17 @@ const DoerProfileSettings = (props) => {
                             </div>
                         </Form.Item>
                     </Form>
+
                     <Divider>Lozinka</Divider>
+                    {/*
+                        Password changing form
+                    */}
                     <Form
                         style={{marginTop: '1em'}}
                         size='large'
                         form={formPassword}
                         onFinish={handleOnFinishPassword}
                     >
-                        <Form.Item
-                            name="oldPassword"
-                        >
-                            <Input.Password
-                                prefix={<LockOutlined/>}
-                                type="password"
-                                placeholder="Stara lozinka"
-                            />
-                        </Form.Item>
                         <Form.Item
                             name="newPassword"
                             rules={[
@@ -264,7 +299,7 @@ const DoerProfileSettings = (props) => {
                                 },
                                 {
                                     validator: (_, value) => {
-                                        if (value !== form.getFieldValue('newPassword'))
+                                        if (value !== formPassword.getFieldValue('newPassword'))
                                             return Promise.reject('Lozinke moraju biti istovetne.');
                                         return Promise.resolve();
                                     }
@@ -280,7 +315,7 @@ const DoerProfileSettings = (props) => {
                         <Form.Item>
                             <div style={{textAlign: "center"}}>
                                 <Button htmlType="submit">
-                                    Potvrdi izmene
+                                    Promeni lozinku
                                 </Button>
                             </div>
                         </Form.Item>
