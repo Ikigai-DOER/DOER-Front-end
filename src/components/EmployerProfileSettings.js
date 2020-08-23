@@ -7,7 +7,6 @@ import FileUpload from "./UploadPicture";
 import {BASE_URL} from "../constants";
 
 
-// TODO: implement change password
 const DoerProfileSettings = (props) => {
     const {userInfo, setUserInfo} = useContext(UserContext);
     const [form] = Form.useForm();
@@ -37,11 +36,11 @@ const DoerProfileSettings = (props) => {
 
     function handleOnFinish(values) {
         const user_profile = {
-                ...userInfo.user.user_profile,
-                username: values.username,
-                first_name: values.firstName,
-                last_name: values.lastName,
-                email: values.email,
+            ...userInfo.user.user_profile,
+            username: values.username,
+            first_name: values.firstName,
+            last_name: values.lastName,
+            email: values.email,
         };
 
         const userAccount = {
