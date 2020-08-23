@@ -6,12 +6,13 @@ import logo from "../logos/doer2.svg";
 import api from "../api";
 import './LoginForm.css';
 import UserContext from "../UserContext";
+import {BASE_URL} from "../constants";
 
 const {Content} = Layout;
 
 function LoginForm(props) {
     let history = useHistory();
-    const { userInfo, setUserInfo } = useContext(UserContext);
+    const {userInfo, setUserInfo} = useContext(UserContext);
 
     const handleOnFinish = async (values) => {
         const loginData = {
@@ -22,8 +23,12 @@ function LoginForm(props) {
         try {
             const userInfo = await api.login(loginData);
             const response = await api.getUserInfo(userInfo.pk);
-            localStorage.userInfo = JSON.stringify(response.data);
-            setUserInfo(response.data);
+            const data = {
+                ...response.data,
+                user: {...response.data.user, profile_pic: `${BASE_URL}${response.data.user.profile_pic}`}
+            };
+            localStorage.userInfo = JSON.stringify(data);
+            setUserInfo(data);
             history.push('/site/job');
         } catch (err) {
             message.error('Neuspešno logovanje');
@@ -32,7 +37,7 @@ function LoginForm(props) {
 
     return <Layout>
         <Content style={{height: '100vh'}} className='content-background'>
-            <div className='login' style={{ paddingTop: 20 }}>
+            <div className='login' style={{paddingTop: 20}}>
                 <Row>
                     <Col span={24}>
                         <img src={logo} style={{width: '100%'}} alt='conmisi logo'/>

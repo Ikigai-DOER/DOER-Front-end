@@ -54,7 +54,7 @@ function HEADER(props) {
                 <Dropdown overlay={<MainMenu Logout={props.logout}/>} trigger={'click'}>
                     <div>
                         {userInfo?.user?.user_profile
-                            ? <Avatar style={{ marginRight: '1em' }} src={userInfo.user.user_profile.profile_pic} alt={userInfo.user.user_profile.username} />
+                            ? <Avatar style={{ marginRight: '1em' }} src={userInfo.user.profile_pic} alt={userInfo.user.user_profile.username} />
                             : <UserOutlined style={{fontSize: '1.5em', padding: '1em'}}/>
                         }
                         <span style={{ color: 'white', fontWeight: 'bold' }}>

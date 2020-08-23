@@ -4,8 +4,6 @@ import {RegistrationState, Roles} from "../constants";
 import {useHistory} from "react-router";
 import api from "../api";
 
-const axios = require('axios').default;
-
 export const ThirdStepRegistration = (props) => {
     const history = useHistory();
 
