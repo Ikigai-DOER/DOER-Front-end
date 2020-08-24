@@ -1,20 +1,5 @@
-import React, {useContext, useEffect, useState} from "react";
-import {
-    Affix,
-    Alert,
-    Avatar,
-    Button,
-    Col,
-    Collapse,
-    Input,
-    InputNumber,
-    List,
-    Radio,
-    Row,
-    Select,
-    Spin,
-    Tag
-} from "antd";
+import React, {useCallback, useContext, useEffect, useState} from "react";
+import {Affix, Alert, Avatar, Button, Col, Input, InputNumber, List, Radio, Row, Select, Spin, Tag} from "antd";
 import './JobList.css';
 import {useHistory} from "react-router";
 import {formatCurrency} from "../utils";
@@ -23,10 +8,9 @@ import Availability from "../components/Availability";
 import {PlusOutlined} from "@ant-design/icons";
 import moment from "moment";
 import UserContext from "../UserContext";
-import {CSSTransition} from "react-transition-group";
+import {debounce} from "lodash";
 
 const { Option } = Select;
-const { Panel } = Collapse;
 
 const JobList = () => {
 
@@ -49,26 +33,36 @@ const JobList = () => {
     const [professions, setProfessions] = useState([]);
     const [filters, setFilters] = useState(professions);
 
+    const [query, setQuery] = useState(null);
     const [filtersExpanded, setFiltersExpanded] = useState(false);
-    const [selected, setSelected] = useState('A');
+    const [selected, setSelected] = useState('S');
+    const [min, setMin] = useState(10);
+    const [max, setMax] = useState(100);
 
     const onMinChanged = (value) => {
-
+        if (value >= max) {
+            setMax(value);
+        }
+        setMin(value);
     };
 
     const onMaxChanged = (value) => {
-
+        if (value <= min) {
+            setMin(value);
+        }
+        setMax(value);
     };
 
+    // TODO: add query to filters
     async function fetch() {
         setIsLoading(true);
         setIsError(false);
         try {
             const response = personal
                 ? await api.getPersonalJobs()
-                : filters.length === 0
+                : filters.length === 0 && selected === 'S'
                     ? await api.getJobs()
-                    : await api.getFilteredJobs(filters);
+                    : await api.getFilteredJobs(filters, min, max, selected === 'S' ? null : selected);
             setIsLoading(false);
             setData(response.data);
         } catch (err) {
@@ -76,6 +70,10 @@ const JobList = () => {
             setIsError(true);
         }
     }
+
+    useEffect(() => {
+        fetch();
+    }, []);
 
     useEffect(() => {
         async function getProfessions() {
@@ -89,10 +87,11 @@ const JobList = () => {
         getProfessions();
     }, []);
 
+    const debounced = useCallback(debounce(fetch, 1000), []);
+
     useEffect(() => {
-        console.debug("USEEFFECT RUNNING");
-        fetch();
-    }, [personal, filters]);
+        debounced();
+    }, [query, selected, filters, min, max]);
 
     const filterData = () =>
         filters.length === 0
@@ -117,7 +116,7 @@ const JobList = () => {
                 <div className="search">
                     <Row justify="space-between">
                         <Col span={19}>
-                            <Input placeholder="Pretraga" className="search-input" />
+                            <Input placeholder="Pretraga" className="search-input" onChange={setQuery} />
                         </Col>
                         <Col span={4}>
                             <Button
@@ -150,7 +149,7 @@ const JobList = () => {
                                     <p style={{ padding: 4 }}>Status:</p>
                                 </Col>
                                 <Col span={20}>
-                                    <Radio.Group className="radio" onChange={event => setSelected(event.target.value)} defaultValue="A">
+                                    <Radio.Group className="radio" onChange={event => setSelected(event.target.value)} defaultValue="S">
                                         <Radio.Button value="S" className={"radio-item " + (selected === "S" ? "S" : "")}>Svi</Radio.Button>
                                         <Radio.Button value="A" className={"radio-item " + (selected === "A" ? "A" : "")}>Available</Radio.Button>
                                         <Radio.Button value="P" className={"radio-item " + (selected === "P" ? "P" : "")}>In progress</Radio.Button>
@@ -177,6 +176,7 @@ const JobList = () => {
                                                 parser={value => value.replace('€', '')}
                                                 precision={2}
                                                 step={10}
+                                                value={min}
                                                 onChange={onMinChanged}
                                             />
                                         </Col>
@@ -192,6 +192,7 @@ const JobList = () => {
                                                 parser={value => value.replace('€', '')}
                                                 precision={2}
                                                 step={10}
+                                                value={max}
                                                 onChange={onMaxChanged}
                                             />
                                         </Col>
