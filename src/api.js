@@ -34,12 +34,13 @@ export default {
     getJob: id => axios.get(`request/${id}/`),
     getPersonalJobs: () => axios.get('personal-requests/'),
     getProfessions: () => axios.get('profession/'),
-    getFilteredJobs: professions => axios.get('request-search/', { params: { professions: professions.join() } }),
+    getFilteredJobs: (professions, min, max, status) => axios.get('request-search/', { params: { professions: professions.join(), min, max, status } }),
     postJob: job => axios.post('request/', { ...job }),
     rateDoer: (value, id) => axios.post('rate-doer/', null, { params: { rate: value, ratee: +id } }),
     getEmployers: () => axios.get('employer/'),
     getEmployer: id => axios.get(`employer/${id}/`),
     getUserInfo: userId => axios.get('user-info/', { params: { userId } }),
+    reportJob: data => axios.post('report-request/', data),
     register: async (userData, role) => {
         try {
             const response = await axios.post('dj-rest-auth/registration/', userData.userProfile);

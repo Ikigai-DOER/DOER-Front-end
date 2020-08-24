@@ -1,5 +1,5 @@
 import React, {useContext, useState} from 'react';
-import {Alert, Button, Col, Form, Input, InputNumber, message, Radio, Row, Select, Spin, Tag} from "antd";
+import {Alert, Button, Col, Form, Input, InputNumber, message, Modal, Radio, Row, Select, Spin, Tag} from "antd";
 import './Job.css';
 import api from "../api";
 import {formatCurrency, useApi} from "../utils";
@@ -19,6 +19,8 @@ const Job = () => {
     const [selectedProfessions, setSelectedProfessions] = useState([]);
     const [selected, setSelected] = useState('A');
 
+    const [showModal, setShowModal] = useState(false);
+
     const readOnly = jobId !== undefined;
 
     const getJobFn = () => {
@@ -31,9 +33,7 @@ const Job = () => {
 
     const [{data, isLoading, isError}, setFn] = useApi(() => getJobFn(), {});
 
-    // if (isError) {
-    //     history.push('/site/job');
-    // }
+    const [form] = Form.useForm();
 
     const changeFilters = filters => {
         setSelectedProfessions(filters);
@@ -48,6 +48,21 @@ const Job = () => {
             history.push('/site/job');
         } catch (err) {
             message.error('Posao nije dodan');
+        }
+    };
+
+    const reportJob = async () => {
+        const description = form.getFieldValue('description');
+        const data = {
+            request: jobId,
+            description
+        };
+        try {
+            await api.reportJob(data);
+            form.resetFields();
+            setShowModal(false);
+        } catch (err) {
+            message.error('Greška u prijavljivanju posla');
         }
     };
 
@@ -203,6 +218,7 @@ const Job = () => {
                                         style={{ width: '100%' }}
                                         type="primary"
                                         danger
+                                        onClick={() => setShowModal(true)}
                                     >
                                         Prijavi
                                     </Button>
@@ -218,6 +234,38 @@ const Job = () => {
                         </Row>
                     </Form>
                 </div>
+                <Modal
+                    okText="Prijavi"
+                    cancelText="Poništi"
+                    visible={showModal}
+                    onOk={reportJob}
+                    onCancel={() => {
+                        setShowModal(false);
+                        form.resetFields();
+                    }}
+                    closable={true}
+                >
+                    <h2>Prijava sumnjivog posla</h2>
+                    <Row justify="space-between" style={{ marginTop: 20 }}>
+                        <Col span={3}>
+                            <p style={{ padding: 6 }}>Opis: </p>
+                        </Col>
+                        <Col span={20}>
+                            <Form
+                                form={form}
+                            >
+                                <Form.Item
+                                    name="description"
+                                >
+                                    <Input.TextArea
+                                        placeholder="Ovde napišite zašto prijavljujete posao."
+                                        autoSize={true}
+                                    />
+                                </Form.Item>
+                            </Form>
+                        </Col>
+                    </Row>
+                </Modal>
             </Spin>
         </div>
     );
