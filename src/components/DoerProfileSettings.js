@@ -68,9 +68,14 @@ const DoerProfileSettings = (props) => {
             title: 'UPOZORENJE',
             icon: <ExclamationCircleOutlined/>,
             content: 'Da li ste sigurni da zelite da deaktivirate profil?',
-            onOk() {
-                // TODO: api deactivate profile
-                setShow(false);
+            async onOk() {
+                try {
+                    await api.deactivateProfile();
+                    setShow(false);
+                    localStorage.clear();
+                } catch (e) {
+                    console.error(e);
+                }
             },
         });
     }
@@ -342,8 +347,8 @@ const DoerProfileSettings = (props) => {
                     </Form>
 
                     <Divider><i>Upravljanje profilom</i></Divider>
-                    <Row align='center'>
-                        <Col className='centered-column' style={{marginBottom: '15px'}}>
+                    <Row align='center' style={{marginBottom: '15px'}}>
+                        <Col>
                             <Button type="danger" onClick={confirmationDelete}>Deaktiviraj profil</Button>
                         </Col>
                     </Row>
