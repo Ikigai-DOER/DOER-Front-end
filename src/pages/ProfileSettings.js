@@ -7,10 +7,11 @@ import EmployerProfileSettings from "../components/EmployerProfileSettings";
 const ProfileSettings = (props) => {
     const {userInfo} = useContext(UserContext);
 
+
     return (
         <div>
             {
-                userInfo.doer === true ?
+                userInfo?.doer === true ?
                     <DoerProfileSettings/>
                     :
                     <EmployerProfileSettings/>
