@@ -11,14 +11,13 @@ import {LogoutOutlined, SettingOutlined} from "@ant-design/icons";
 function MainMenu(props) {
     const history = useHistory();
 
-
     return <Menu>
         <Menu.Item key={1}
-                   onClick={() => history.push('/nesto')}
+                   onClick={() => history.push('settings')}
         >
             <SettingOutlined/>
             <span>
-                Neke opcije
+                Podesavanja
             </span>
         </Menu.Item>
         <Menu.Divider/>

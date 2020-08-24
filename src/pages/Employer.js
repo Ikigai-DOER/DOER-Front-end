@@ -51,7 +51,7 @@ const Employer = () => {
                     <Avatar
                         shape="circle"
                         size={200}
-                        src={data?.user_profile?.profile_pic}
+                        src={data?.profile_pic}
                         alt={data?.user_profile?.username ?? ''}
                     />
                 </Col>

@@ -4,8 +4,6 @@ import {RegistrationState, Roles} from "../constants";
 import {useHistory} from "react-router";
 import api from "../api";
 
-const axios = require('axios').default;
-
 export const ThirdStepRegistration = (props) => {
     const history = useHistory();
 
@@ -19,7 +17,7 @@ export const ThirdStepRegistration = (props) => {
             onFinish={async (values) => {
                 const user = {
                     ...props.profile,
-                    userProfile: {
+                    user_profile: {
                         ...props.profile.userProfile,
                         email: values.email,
                         username: values.username,
@@ -30,7 +28,6 @@ export const ThirdStepRegistration = (props) => {
                 try {
                     await api.register(user, props.role);
                     props.goToRegister(false);
-                    message.info('Uspesno ste se registrovali');
                 } catch (_) {
                     message.error('Niste se uspesno registrovali');
                 }

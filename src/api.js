@@ -41,9 +41,28 @@ export default {
     getEmployer: id => axios.get(`employer/${id}/`),
     getUserInfo: userId => axios.get('user-info/', { params: { userId } }),
     reportJob: data => axios.post('report-request/', data),
+    setProfileSettings: async (isDoer, id, data) => {
+        try {
+            const prefix = isDoer ? 'doer/' : 'employer/';
+            let response = await axios.put(`${prefix}${id}/`, data);
+            message.info('Uspesno izmenjene informacije o profilu!');
+            return response
+        } catch (error) {
+            message.error(JSON.stringify(error.response.data).replaceAll(/[^\w]/g, " "));
+        }
+    },
+    changePassword: async (passwordData) => {
+        try {
+            const resp = await axios.post('/dj-rest-auth/password/change/', passwordData);
+            console.debug(resp);
+            message.info('Uspesno izmenjena loznka!');
+        } catch (error) {
+            message.error(JSON.stringify(error.response.data));
+        }
+    },
     register: async (userData, role) => {
         try {
-            const response = await axios.post('dj-rest-auth/registration/', userData.userProfile);
+            const response = await axios.post('dj-rest-auth/registration/', userData.user_profile);
             const accessToken = response.data.access_token;
             const refreshToken = response.data.refresh_token;
             const user = response.data.user;
@@ -53,10 +72,12 @@ export default {
             await axios.post(path, {
                 user_id: user.pk,
                 phone_no: userData.phone_no,
-                birth_date: userData.birth_date
+                birth_date: userData.birth_date,
+                user_profile: userData.user_profile,
             });
 
             removeToken();
+            message.info('Uspesno ste se registrovali');
         } catch (error) {
             message.error(JSON.stringify(error.response.data).replaceAll(/[^\w]/g, " "));
             message.error('Nije moguca registracija, molimo pokušajte ponovo.');

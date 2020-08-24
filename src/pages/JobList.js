@@ -19,6 +19,9 @@ const JobList = () => {
     const personalPath = history.location.pathname.includes('personal');
     const [personal, setPersonal] = useState(personalPath);
     useEffect(() => {
+        document.title = 'Doer App'
+    }, []);
+    useEffect(() => {
         if (personalPath !== personal) {
             setPersonal(personalPath);
         }
