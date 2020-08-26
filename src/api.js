@@ -103,6 +103,7 @@ export default {
             await axios.post('dj-rest-auth/logout/');
         } finally {
             removeToken();
+        }
     },
     deactivateProfile: async () => {
         try {
