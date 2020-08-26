@@ -1,5 +1,5 @@
 import React, {useContext, useRef, useState} from 'react';
-import {Button, Col, Divider, Form, Input, Row, Select, Tag} from "antd";
+import {Button, Col, Divider, Form, Input, Modal, Row, Select, Tag} from "antd";
 import "./DoerProfileSettings.css";
 import UserContext from "../UserContext";
 import api from "../api";
@@ -7,6 +7,7 @@ import FileUpload from "./UploadPicture";
 import {LockOutlined} from '@ant-design/icons';
 import {useHistory} from "react-router";
 import {useApi} from "../utils";
+import {ExclamationCircleOutlined} from "@ant-design/icons";
 import {useParams} from "react-router-dom";
 
 const {Option} = Select;
@@ -15,13 +16,16 @@ const DoerProfileSettings = (props) => {
     const {userInfo, setUserInfo} = useContext(UserContext);
     const [form] = Form.useForm();
     const [formPassword] = Form.useForm();
-    const userAccount = userInfo.user;
+    const userAccount = userInfo?.user;
     const file = useRef(null);
-    const userProfile = userAccount.user_profile;
+    const userProfile = userAccount?.user_profile;
     const history = useHistory();
     const [selectedProfessions, setSelectedProfessions] = useState([]);
     const {jobId} = useParams();
     const [{data: professions}] = useApi(() => api.getProfessions(), []);
+    const {confirm} = Modal;
+    const [show, setShow] = useState(true);
+
 
     const changeFilters = filters => {
         setSelectedProfessions(filters);
@@ -57,6 +61,23 @@ const DoerProfileSettings = (props) => {
         }
 
         return formData;
+    }
+
+    function confirmationDelete () {
+        confirm({
+            title: 'UPOZORENJE',
+            icon: <ExclamationCircleOutlined/>,
+            content: 'Da li ste sigurni da zelite da deaktivirate profil?',
+            async onOk() {
+                try {
+                    await api.deactivateProfile();
+                    setShow(false);
+                    localStorage.clear();
+                } catch (e) {
+                    console.error(e);
+                }
+            },
+        });
     }
 
     async function handleOnFinishPassword(values) {
@@ -96,6 +117,10 @@ const DoerProfileSettings = (props) => {
         } catch (error) {
             console.error(error)
         }
+    }
+
+    if (!userInfo) {
+        return <></>;
     }
 
     return (
@@ -320,6 +345,13 @@ const DoerProfileSettings = (props) => {
                             </div>
                         </Form.Item>
                     </Form>
+
+                    <Divider><i>Upravljanje profilom</i></Divider>
+                    <Row align='center' style={{marginBottom: '15px'}}>
+                        <Col>
+                            <Button type="danger" onClick={confirmationDelete}>Deaktiviraj profil</Button>
+                        </Col>
+                    </Row>
                 </div>
             </Col>
         </Row>
