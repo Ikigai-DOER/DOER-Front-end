@@ -20,6 +20,7 @@ const Job = () => {
     const [selected, setSelected] = useState('A');
 
     const [showModal, setShowModal] = useState(false);
+    const [showSubmitModal, setShowSubmitModal] = useState(false);
 
     const readOnly = jobId !== undefined;
 
@@ -34,6 +35,7 @@ const Job = () => {
     const [{data, isLoading, isError}, setFn] = useApi(() => getJobFn(), {});
 
     const [form] = Form.useForm();
+    const [submitForm] = Form.useForm();
 
     const changeFilters = filters => {
         setSelectedProfessions(filters);
@@ -63,6 +65,18 @@ const Job = () => {
             setShowModal(false);
         } catch (err) {
             message.error('Greška u prijavljivanju posla');
+        }
+    };
+
+    const submitRequest = async () => {
+        const offer = submitForm.getFieldValue('offer');
+        const data = {request: +jobId, offer};
+        try {
+            await api.submitJobRequest(data);
+            message.info('Uspešno ste se prijavili za posao');
+            setShowSubmitModal(false);
+        } catch (err) {
+            message.error('Greška u prijavljivanju za posao');
         }
     };
 
@@ -206,7 +220,7 @@ const Job = () => {
                                     <Button
                                         style={{ width: '100%' }}
                                         type="primary"
-                                        onClick={() => console.log('Prijavljen posao')}
+                                        onClick={() => setShowSubmitModal(true)}
                                     >
                                         Prijavi se za posao
                                     </Button>
@@ -259,6 +273,38 @@ const Job = () => {
                                 >
                                     <Input.TextArea
                                         placeholder="Ovde napišite zašto prijavljujete posao."
+                                        autoSize={true}
+                                    />
+                                </Form.Item>
+                            </Form>
+                        </Col>
+                    </Row>
+                </Modal>
+                <Modal
+                    okText="Prijavi"
+                    cancelText="Poništi"
+                    visible={showSubmitModal}
+                    onOk={submitRequest}
+                    onCancel={() => {
+                        setShowSubmitModal(false);
+                        submitForm.resetFields();
+                    }}
+                    closable={true}
+                >
+                    <h2>Prijavite se za posao</h2>
+                    <Row justify="space-between" style={{ marginTop: 20 }}>
+                        <Col span={3}>
+                            <p style={{ padding: 6 }}>Opis: </p>
+                        </Col>
+                        <Col span={20}>
+                            <Form
+                                form={submitForm}
+                            >
+                                <Form.Item
+                                    name="offer"
+                                >
+                                    <Input.TextArea
+                                        placeholder="Dodatne informacije."
                                         autoSize={true}
                                     />
                                 </Form.Item>
