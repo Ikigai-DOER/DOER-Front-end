@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Alert, Avatar, Col, List, Row, Space, Spin, Tag} from "antd";
+import {Alert, Avatar, Button, Col, Form, Input, List, message, Modal, Row, Space, Spin, Tag} from "antd";
 import {useApi} from "../utils";
 import {useHistory} from "react-router";
 import {useParams} from "react-router-dom";
@@ -16,6 +16,9 @@ const Employer = () => {
     const [{data, isLoading, isError}, setFn] = useApi(() => api.getEmployer(id), {});
     const [favourites, setFavourites] = useState(null);
 
+    const [showMessageModal, setShowMessageModal] = useState(false);
+    const [messageForm] = Form.useForm(null);
+
     const fetchFavourites = async (ids) => {
         const response = await Promise.all(ids.map(id => api.getDoer(id)));
         setFavourites(response.map(r => r.data));
@@ -29,6 +32,22 @@ const Employer = () => {
             }
         }
     }, [data]);
+
+    const sendMessage = async () => {
+        if (id) {
+            try {
+                const messageText = messageForm.getFieldValue('message');
+                const response = await api.getEmployer(id);
+                const receiver = response.data.user_profile.id;
+                await api.sendMessage(receiver, messageText);
+                message.info('Uspešno ste poslali poruku');
+                setShowMessageModal(false);
+                messageForm.resetFields();
+            } catch (e) {
+                message.error('Greška pri slanju poruke')
+            }
+        }
+    };
 
     if (isError) {
         return (
@@ -46,59 +65,72 @@ const Employer = () => {
 
     return (
         <div className="employer">
-            <Row align="middle" className="container">
-                <Col span={8} className="centered-column">
-                    <Avatar
-                        shape="circle"
-                        size={200}
-                        src={data?.profile_pic}
-                        alt={data?.user_profile?.username ?? ''}
-                    />
-                </Col>
-                <Col span={8} className="centered-column">
-                    <Space align="center">
-                        {data?.user_profile?.username &&
+            <div className="container">
+                <Row align="middle">
+                    <Col span={8} className="centered-column">
+                        <Avatar
+                            shape="circle"
+                            size={200}
+                            src={data?.profile_pic}
+                            alt={data?.user_profile?.username ?? ''}
+                        />
+                    </Col>
+                    <Col span={8} className="centered-column">
+                        <Space align="center">
+                            {data?.user_profile?.username &&
                             <p style={{ fontSize: '1rem', color: '#18abff' }}>
                                 <i className="fas fa-user" />
-                                    &nbsp;&nbsp;
-                                    {data.user_profile.username}
+                                &nbsp;&nbsp;
+                                {data.user_profile.username}
                             </p>
-                        }
-                    </Space>
-                    <br/>
-                    <Space align="center">
-                        <h1>
-                            {data?.user_profile?.first_name && data?.user_profile?.last_name &&
+                            }
+                        </Space>
+                        <br/>
+                        <Space align="center">
+                            <h1>
+                                {data?.user_profile?.first_name && data?.user_profile?.last_name &&
                                 data.user_profile.first_name + ' ' + data.user_profile.last_name
-                            }
-                        </h1>
-                    </Space>
-                    <br/>
-                    <Space align="center">
-                        <p>
-                            {data?.user_profile?.email &&
+                                }
+                            </h1>
+                        </Space>
+                        <br/>
+                        <Space align="center">
+                            <p>
+                                {data?.user_profile?.email &&
                                 'Email: ' + data.user_profile.email
-                            }
-                        </p>
-                    </Space>
-                    <br/>
-                    <Space align="center">
-                        <p>
-                            {data?.phone_no &&
+                                }
+                            </p>
+                        </Space>
+                        <br/>
+                        <Space align="center">
+                            <p>
+                                {data?.phone_no &&
                                 'Broj telefona: ' + data.phone_no
-                            }
-                        </p>
-                    </Space>
-                </Col>
-                <Col span={8} className="centered-column">
-                    {data?.user_profile?.date_joined &&
+                                }
+                            </p>
+                        </Space>
+                    </Col>
+                    <Col span={8} className="centered-column">
+                        {data?.user_profile?.date_joined &&
                         <p>Pridruzio se na: {moment(data.user_profile.date_joined).format('DD.MM.YYYY.')}</p>
-                    }
-                    {data?.user_profile?.last_login &&
+                        }
+                        {data?.user_profile?.last_login &&
                         <p>Posledja aktivnost: {moment(data.user_profile.last_login).format('DD.MM.YYYY. HH:mm')}</p>
-                    }
-                </Col>
-            </Row>
+                        }
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={4} offset={10}>
+                        <Button
+                            type="primary"
+                            style={{ width: '100%' }}
+                            onClick={() => setShowMessageModal(true)}
+                        >
+                            Pošalji poruku
+                        </Button>
+                    </Col>
+                </Row>
+            </div>
             <div>
                 <p style={{ width: '100%', textAlign: 'center', marginTop: 30, fontSize: '2em' }}>Favoriti</p>
                 {favourites &&
@@ -148,6 +180,29 @@ const Employer = () => {
                     </div>
                 }
             </div>
+            <Modal
+                okText="Pošalji poruku"
+                cancelText="Poništi"
+                visible={showMessageModal}
+                onOk={sendMessage}
+                onCancel={() => {
+                    setShowMessageModal(false);
+                    messageForm.resetFields();
+                }}
+                closable
+            >
+                <Form
+                    form={messageForm}
+                >
+                    <Form.Item
+                        style={{ marginTop: 20 }}
+                        name="message"
+                        label="Poruka"
+                    >
+                        <Input.TextArea />
+                    </Form.Item>
+                </Form>
+            </Modal>
         </div>
     );
 };

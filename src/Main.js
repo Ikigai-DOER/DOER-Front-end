@@ -14,6 +14,7 @@ import Job from "./pages/Job";
 import Employer from "./pages/Employer";
 import EmployerList from "./pages/EmployerList";
 import ProfileSettings from "./pages/ProfileSettings";
+import Messages from "./pages/Messages";
 
 const {Content, Footer} = Layout;
 
@@ -74,6 +75,7 @@ const Main = () => {
                         <Route exact path={`${path}/doer`} component={DoerList}/>
                         <Route exact path={`${path}/employer`} component={EmployerList}/>
                         <Route exact path={`${path}/employer/:id`} component={Employer}/>
+                        <Route exact path={`${path}/messages`} component={Messages}/>
                         <Route path={`${path}/doer/:id`} component={Doer}/>
                         <Route path={`${path}/settings`} component={ProfileSettings} />
 

@@ -41,6 +41,9 @@ export default {
     getEmployer: id => axios.get(`employer/${id}/`),
     getUserInfo: userId => axios.get('user-info/', { params: { userId } }),
     reportJob: data => axios.post('report-request/', data),
+    submitJobRequest: data => axios.post('request-submission/', data),
+    getMessages: () => axios.get('message/'),
+    sendMessage: (receiver, message) => axios.post('message/', { receiver, message }),
     setProfileSettings: async (isDoer, id, data) => {
         try {
             const prefix = isDoer ? 'doer/' : 'employer/';
@@ -96,7 +99,10 @@ export default {
         }
     },
     logout: async () => {
-        return axios.post('dj-rest-auth/logout/')
-            .then(() => removeToken());
+        try {
+            await axios.post('dj-rest-auth/logout/');
+        } finally {
+            removeToken();
+        }
     }
 };

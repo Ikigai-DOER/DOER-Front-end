@@ -7,7 +7,7 @@ import {useHistory, useLocation} from "react-router";
 import {Menu} from "antd";
 
 //Ant icons
-import {UnorderedListOutlined, SearchOutlined, UserOutlined} from "@ant-design/icons";
+import {UnorderedListOutlined, SearchOutlined, UserOutlined, MessageOutlined} from "@ant-design/icons";
 
 function SiderMenu() {
     let history = useHistory();
@@ -24,6 +24,8 @@ function SiderMenu() {
         defaultKeys = 2;
     } else if (location.pathname.includes('personal')) {
         defaultKeys = 3;
+    } else if (location.pathname.includes('messages')) {
+        defaultKeys = 4;
     } else {
         defaultKeys = 0;
     }
@@ -35,6 +37,8 @@ function SiderMenu() {
             setSelectedKey(2);
         } else if (location.pathname.includes('personal')) {
             setSelectedKey(3);
+        } else if (location.pathname.includes('messages')) {
+            setSelectedKey(4);
         } else {
             setSelectedKey(0);
         }
@@ -88,6 +92,16 @@ function SiderMenu() {
         >
             <UnorderedListOutlined />
             <span>Moji poslovi</span>
+        </Menu.Item>
+        <Menu.Item key="4"
+                   style={{marginBottom: '1em'}}
+                   onClick={() => {
+                       history.push('/site/messages')
+                       goToTop();
+                   }}
+        >
+            <MessageOutlined />
+            <span>Poruke</span>
         </Menu.Item>
     </Menu>
 }

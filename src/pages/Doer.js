@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {Alert, Button, Col, Rate, Row, Space, Spin, Tag, message} from "antd";
+import {Alert, Button, Col, Rate, Row, Space, Spin, Tag, message, Modal, Form, Input} from "antd";
 import DoerAvatar from "../components/DoerAvatar";
 import './Doer.css'
 import {useApi} from "../utils";
@@ -13,9 +13,13 @@ const Doer = () => {
     const { id } = useParams();
     const { userInfo } = useContext(UserContext);
 
+    const [messageForm] = Form.useForm(null);
+
     const [{data, isLoading, isError}, setFn] = useApi(() => api.getDoer(id), {});
 
     const [rate, setRate] = useState(0);
+
+    const [showMessageModal, setShowMessageModal] = useState(false);
 
     useEffect(() => setRate(data.user_rating || 0), [data]);
 
@@ -26,6 +30,22 @@ const Doer = () => {
             setRate(value);
         } catch (error) {
             message.error('Greska u ocenjivanju DOER-a');
+        }
+    };
+
+    const sendMessage = async () => {
+        if (id) {
+            try {
+                const messageText = messageForm.getFieldValue('message');
+                const response = await api.getDoer(id);
+                const receiver = response.data.user_profile.id;
+                await api.sendMessage(receiver, messageText);
+                message.info('Uspešno ste poslali poruku');
+                setShowMessageModal(false);
+                messageForm.resetFields();
+            } catch (e) {
+                message.error('Greška pri slanju poruke')
+            }
         }
     };
 
@@ -101,6 +121,9 @@ const Doer = () => {
             <Row>
                 <Col span={24} className="centered-column">
                     <Space>
+                        <Button type="primary" onClick={() => setShowMessageModal(true)}>
+                            Pošalji poruku
+                        </Button>
                         {userInfo?.doer !== null && userInfo.doer === false &&
                             <Button type="primary">
                                 Unajmi
@@ -112,6 +135,29 @@ const Doer = () => {
                     </Space>
                 </Col>
             </Row>
+            <Modal
+                okText="Pošalji poruku"
+                cancelText="Poništi"
+                visible={showMessageModal}
+                onOk={sendMessage}
+                onCancel={() => {
+                    setShowMessageModal(false);
+                    messageForm.resetFields();
+                }}
+                closable
+            >
+                <Form
+                    form={messageForm}
+                >
+                    <Form.Item
+                        style={{ marginTop: 20 }}
+                        name="message"
+                        label="Poruka"
+                    >
+                        <Input.TextArea />
+                    </Form.Item>
+                </Form>
+            </Modal>
         </div>
     );
 };
