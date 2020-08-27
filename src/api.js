@@ -35,18 +35,20 @@ export default {
     getPersonalJobs: () => axios.get('personal-requests/'),
     getMyJobs: () => axios.get('my-requests-list/'),
     getProfessions: () => axios.get('profession/'),
-    getFilteredJobs: (professions, min, max, status) => axios.get('request-search/', { params: { professions: professions.join(), min, max, status } }),
+    getFilteredJobs: (professions, min, max, status, query) => axios.get('request-search/', { params: { professions: professions.join(), min, max, status, query } }),
     postJob: job => axios.post('request/', { ...job }),
     rateDoer: (value, id) => axios.post('rate-doer/', null, { params: { rate: value, ratee: +id } }),
     getEmployers: () => axios.get('employer/'),
     getEmployer: id => axios.get(`employer/${id}/`),
     getUserInfo: userId => axios.get('user-info/', { params: { userId } }),
     reportJob: data => axios.post('report-request/', data),
+    reportProfile: data => axios.post('report-profile/', data),
     submitJobRequest: data => axios.post('request-submission/', data),
     getMessages: () => axios.get('message/'),
     sendMessage: (receiver, message) => axios.post('message/', { receiver, message }),
     addFavourite: doerId => axios.post('add-favorite-doer/', null, { params: { doerId } }),
     removeFavourite: doerId => axios.post('remove-favorite-doer/', null, { params: { doerId } }),
+    jobSubmissions: jobId => axios.get('submissions-by-request/', { params: { requestId: jobId } }),
     setProfileSettings: async (isDoer, id, data) => {
         try {
             const prefix = isDoer ? 'doer/' : 'employer/';

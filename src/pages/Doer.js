@@ -21,6 +21,10 @@ const Doer = () => {
 
     const [showMessageModal, setShowMessageModal] = useState(false);
 
+    const [showModal, setShowModal] = useState(false);
+
+    const [form] = Form.useForm();
+
     useEffect(() => setRate(data.user_rating || 0), [data]);
 
     const doRateDoer = async (value) => {
@@ -60,6 +64,22 @@ const Doer = () => {
         }
     };
 
+    const reportProfile = async () => {
+        const description = form.getFieldValue('description');
+        const reportData = {
+            profile: data.user_profile.id,
+            description
+        };
+        try {
+            await api.reportProfile(reportData);
+            form.resetFields();
+            setShowModal(false);
+            message.info('Uspešno ste prijavili profil');
+        } catch (err) {
+            message.error('Greška u prijavljivanju profila');
+        }
+    };
+
     if (isLoading) {
         return (
             <Spin size="large" style={{ width: '100%', height: '100%', marginTop: 200 }} />
@@ -87,7 +107,8 @@ const Doer = () => {
                 justify="start"
             >
                 <Col span={8} flex={1} className="centered-column">
-                    <DoerAvatar status={'online'} src={data.profile_pic} alt={data.user_profile.first_name + ' ' + data.user_profile.last_name} />
+                    {/* TODO: online nije stalno */}
+                    <DoerAvatar status={data.availability || ''} src={data.profile_pic} alt={data.user_profile.first_name + ' ' + data.user_profile.last_name} />
                 </Col>
                 <Col span={8} flex={1} className="centered-column">
                     <Space align="center">
@@ -143,7 +164,7 @@ const Doer = () => {
                                 Dodaj u favorite
                             </Button>
                         }
-                        <Button type="primary" danger>
+                        <Button type="primary" danger onClick={() => setShowModal(true)}>
                             Prijavi
                         </Button>
                     </Space>
@@ -171,6 +192,38 @@ const Doer = () => {
                         <Input.TextArea />
                     </Form.Item>
                 </Form>
+            </Modal>
+            <Modal
+                okText="Prijavi"
+                cancelText="Poništi"
+                visible={showModal}
+                onOk={reportProfile}
+                onCancel={() => {
+                    setShowModal(false);
+                    form.resetFields();
+                }}
+                closable={true}
+            >
+                <h2>Prijava sumnjivog posla</h2>
+                <Row justify="space-between" style={{ marginTop: 20 }}>
+                    <Col span={3}>
+                        <p style={{ padding: 6 }}>Opis: </p>
+                    </Col>
+                    <Col span={20}>
+                        <Form
+                            form={form}
+                        >
+                            <Form.Item
+                                name="description"
+                            >
+                                <Input.TextArea
+                                    placeholder="Ovde napišite zašto prijavljujete posao."
+                                    autoSize={true}
+                                />
+                            </Form.Item>
+                        </Form>
+                    </Col>
+                </Row>
             </Modal>
         </div>
     );

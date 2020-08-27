@@ -24,6 +24,10 @@ const Employer = () => {
     const [showMessageModal, setShowMessageModal] = useState(false);
     const [messageForm] = Form.useForm(null);
 
+    const [showModal, setShowModal] = useState(false);
+
+    const [form] = Form.useForm();
+
     const fetchFavourites = async (ids) => {
         const response = await Promise.all(ids.map(id => api.getDoer(id)));
         setFavourites(response.map(r => r.data));
@@ -60,6 +64,22 @@ const Employer = () => {
             setFavourites(favourites.filter(f => f.id !== id));
         } catch (e) {
             message.error('Greška pri uklanjanju doer-a iz liste favorita');
+        }
+    };
+
+    const reportProfile = async () => {
+        const description = form.getFieldValue('description');
+        const reportData = {
+            profile: data.user_profile.id,
+            description
+        };
+        try {
+            await api.reportProfile(reportData);
+            form.resetFields();
+            setShowModal(false);
+            message.info('Uspešno ste prijavili profil');
+        } catch (err) {
+            message.error('Greška u prijavljivanju profila');
         }
     };
 
@@ -134,13 +154,23 @@ const Employer = () => {
                     </Col>
                 </Row>
                 <Row>
-                    <Col span={4} offset={10}>
+                    <Col span={4} offset={7}>
                         <Button
                             type="primary"
                             style={{ width: '100%' }}
                             onClick={() => setShowMessageModal(true)}
                         >
                             Pošalji poruku
+                        </Button>
+                    </Col>
+                    <Col span={4} offset={2}>
+                        <Button
+                            type="primary"
+                            danger
+                            style={{ width: '100%' }}
+                            onClick={() => setShowModal(true)}
+                        >
+                            Prijavi
                         </Button>
                     </Col>
                 </Row>
@@ -231,6 +261,38 @@ const Employer = () => {
                         <Input.TextArea />
                     </Form.Item>
                 </Form>
+            </Modal>
+            <Modal
+                okText="Prijavi"
+                cancelText="Poništi"
+                visible={showModal}
+                onOk={reportProfile}
+                onCancel={() => {
+                    setShowModal(false);
+                    form.resetFields();
+                }}
+                closable={true}
+            >
+                <h2>Prijava sumnjivog posla</h2>
+                <Row justify="space-between" style={{ marginTop: 20 }}>
+                    <Col span={3}>
+                        <p style={{ padding: 6 }}>Opis: </p>
+                    </Col>
+                    <Col span={20}>
+                        <Form
+                            form={form}
+                        >
+                            <Form.Item
+                                name="description"
+                            >
+                                <Input.TextArea
+                                    placeholder="Ovde napišite zašto prijavljujete posao."
+                                    autoSize={true}
+                                />
+                            </Form.Item>
+                        </Form>
+                    </Col>
+                </Row>
             </Modal>
         </div>
     );
