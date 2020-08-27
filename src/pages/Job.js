@@ -1,5 +1,21 @@
-import React, {useContext, useState} from 'react';
-import {Alert, Button, Col, Form, Input, InputNumber, message, Modal, Radio, Row, Select, Spin, Tag} from "antd";
+import React, {useContext, useEffect, useState} from 'react';
+import {
+    Alert,
+    Avatar,
+    Button,
+    Col,
+    Form,
+    Input,
+    InputNumber,
+    List,
+    message,
+    Modal,
+    Radio,
+    Row,
+    Select,
+    Spin,
+    Tag
+} from "antd";
 import './Job.css';
 import api from "../api";
 import {formatCurrency, useApi} from "../utils";
@@ -24,6 +40,15 @@ const Job = () => {
 
     const readOnly = jobId !== undefined;
 
+    const [location, setLocation] = useState(null);
+    useEffect(() => {
+        if (!readOnly) {
+            navigator.geolocation.getCurrentPosition(loc => {
+                setLocation({lat: loc.coords.latitude, lng: loc.coords.longitude});
+            });
+        }
+    }, [readOnly]);
+
     const getJobFn = () => {
         if (jobId) {
             return api.getJob(jobId);
@@ -34,6 +59,31 @@ const Job = () => {
 
     const [{data, isLoading, isError}, setFn] = useApi(() => getJobFn(), {});
 
+    const [submissions, setSubmissions] = useState([]);
+
+    useEffect(() => {
+        async function fetch() {
+            try {
+                const response = await api.jobSubmissions(jobId);
+                try {
+                    let subs = await Promise.all(response.data.map(r => api.getDoer(r.doer)));
+                    subs = subs.map(s => s.data);
+                    console.log("SUBS", subs);
+                    const result = response.data.map(sub => ({...sub, doer: subs.find(s => s.id === sub.doer)}));
+                    console.log("result", result);
+                    setSubmissions(result);
+                } catch (err) {
+
+                }
+            } catch (err) {
+
+            }
+        }
+        if (jobId) {
+            fetch();
+        }
+    }, [jobId]);
+
     const [form] = Form.useForm();
     const [submitForm] = Form.useForm();
 
@@ -43,7 +93,9 @@ const Job = () => {
 
     const submit = async (values) => {
         const job = {...values, professions: selectedProfessions};
-        console.log('JOB', job);
+        if (location) {
+            job.location = `${location.lat},${location.lng}`;
+        }
         try {
             await api.postJob(job);
             message.info('Uspesno ste dodali posao');
@@ -63,6 +115,7 @@ const Job = () => {
             await api.reportJob(data);
             form.resetFields();
             setShowModal(false);
+            message.info('Uspešno ste prijavili posao');
         } catch (err) {
             message.error('Greška u prijavljivanju posla');
         }
@@ -70,9 +123,17 @@ const Job = () => {
 
     const submitRequest = async () => {
         const offer = submitForm.getFieldValue('offer');
-        const data = {request: +jobId, offer};
+        const submissionData = {request: +jobId, offer};
         try {
-            await api.submitJobRequest(data);
+            await api.submitJobRequest(submissionData);
+            console.log("PORUKA SE SALJE", data, offer);
+            if (data?.employer?.id) {
+                try {
+                    await api.sendMessage(data.employer.user_profile.id, offer);
+                } catch (err) {
+                    message.error("Poruka nije poslana");
+                }
+            }
             message.info('Uspešno ste se prijavili za posao');
             setShowSubmitModal(false);
         } catch (err) {
@@ -91,16 +152,28 @@ const Job = () => {
                         onFinish={submit}
 
                     >
+                        {!readOnly &&
                         <Row style={{ textAlign: 'center' }}>
                             <Col span={24}>
                                 <h1 style={{ fontSize: 40 }}>Dodaj posao</h1>
                             </Col>
                         </Row>
+                        }
+                        {location !== null &&
+                            <Row style={{ textAlign: 'center', marginBottom: 20 }}>
+                                <Col span={24}>
+                                    <a href={`https://gps-coordinates.org/my-location.php?lat=${location.lat}&lng=${location.lng}`} target="_blank" rel="noopener noreferrer">
+                                        <i className="fas fa-map-marker-check"/>
+                                        Lokacija ({`${location.lat},${location.lng}`})
+                                    </a>
+                                </Col>
+                            </Row>
+                        }
                         <Row>
                             <Col span={4}>
                                 <p>Naslov:</p>
                             </Col>
-                            <Col span={20}>
+                            <Col span={readOnly ? 16 : 20}>
                                 <Form.Item
                                     name="title"
                                 >
@@ -110,6 +183,14 @@ const Job = () => {
 
                                     }
                                 </Form.Item>
+                            </Col>
+                            <Col span={4}>
+                                {data.location &&
+                                <a href={`https://gps-coordinates.org/my-location.php?lat=${data.location.split(',')[0]}&lng=${data.location.split(',')[1]}`} target="_blank" rel="noopener noreferrer">
+                                    <i className="fas fa-map-marker-check"/>
+                                    Lokacija
+                                </a>
+                                }
                             </Col>
                         </Row>
                         <Row>
@@ -198,8 +279,8 @@ const Job = () => {
                                 <Form.Item
                                     name="description"
                                 >
-                                    {readOnly
-                                        ? <p>{data.description}</p>
+                                    {readOnly && data?.description
+                                        ? data.description.split('\n').map(row => (<p style={{ margin: 0, padding: 0 }}>{row}</p>))
                                         : <Input.TextArea placeholder="Opis" autoSize={true} />
                                     }
                                 </Form.Item>
@@ -248,6 +329,36 @@ const Job = () => {
                         </Row>
                     </Form>
                 </div>
+                {submissions && submissions.length > 0 &&
+                <div className="content">
+                    <List
+                        size="small"
+                        bordered
+                        dataSource={submissions}
+                        renderItem={item => (
+                            <List.Item>
+                                <div style={{ width: '100%' }}>
+                                    <Row style={{ width: '100%' }}>
+                                        <Col span={2}>
+                                            <Avatar src={item.doer.profile_pic} />
+                                        </Col>
+                                        <Col span={20}>
+                                            <Link to={`/site/doer/${item.doer.id}`}>
+                                                {item.doer.user_profile.first_name + ' ' + item.doer.user_profile.last_name}
+                                            </Link>
+                                        </Col>
+                                    </Row>
+                                    <Row style={{ width: '100%' }}>
+                                        <Col offset={2} span={22}>
+                                            {item.offer}
+                                        </Col>
+                                    </Row>
+                                </div>
+                            </List.Item>
+                        )}
+                    />
+                </div>
+                }
                 <Modal
                     okText="Prijavi"
                     cancelText="Poništi"

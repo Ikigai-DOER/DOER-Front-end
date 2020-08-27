@@ -59,10 +59,8 @@ const JobList = () => {
         setIsError(false);
         try {
             const response = personal
-                ? await api.getPersonalJobs()
-                : filters.length === 0 && selected === 'S'
-                    ? await api.getJobs()
-                    : await api.getFilteredJobs(filters, min, max, selected === 'S' ? null : selected);
+                ? (userInfo.doer ? await api.getMyJobs() : await api.getPersonalJobs())
+                : await api.getFilteredJobs(filters, min, max, (selected === 'S' ? null : selected), query);
             setIsLoading(false);
             setData(response.data);
         } catch (err) {
@@ -73,7 +71,7 @@ const JobList = () => {
 
     useEffect(() => {
         fetch();
-    }, []);
+    }, [personal]);
 
     useEffect(() => {
         async function getProfessions() {
@@ -87,7 +85,7 @@ const JobList = () => {
         getProfessions();
     }, []);
 
-    const debounced = useCallback(debounce(fetch, 1000), []);
+    const debounced = debounce(fetch, 1000);
 
     useEffect(() => {
         debounced();
@@ -99,6 +97,13 @@ const JobList = () => {
             : data
                 .filter(job => job.professions
                     .filter(p => filters.includes(p)).length > 0);
+
+
+    useEffect(() => {
+        console.log('filters:', filters);
+        console.log('min max:', min, max);
+        console.log('query', query);
+    }, [filters, min, max, query]);
 
     return (
         <div className="job-list">
@@ -112,11 +117,12 @@ const JobList = () => {
                         Dodaj posao
                     </Button>
             }
+            {!personal &&
             <Affix offsetTop={70}>
                 <div className="search">
                     <Row justify="space-between">
                         <Col span={19}>
-                            <Input placeholder="Pretraga" className="search-input" onChange={setQuery} />
+                            <Input placeholder="Pretraga" className="search-input" onPressEnter={e => setQuery(e.target.value)} />
                         </Col>
                         <Col span={4}>
                             <Button
@@ -128,81 +134,82 @@ const JobList = () => {
                         </Col>
                     </Row>
                     {filtersExpanded &&
-                        <div>
-                            <Row>
-                                <Col span={4}>
-                                    <p style={{ padding: 4 }}>Profesije:</p>
-                                </Col>
-                                <Col span={20}>
-                                    <Select
-                                        mode="multiple"
-                                        style={{ width: '100%' }}
-                                        placeholder="Please select"
-                                        onChange={setFilters}
-                                    >
-                                        {professions && professions.map(p => <Option key={p.title} value={p.title}>{p.title}</Option>)}
-                                    </Select>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col span={4}>
-                                    <p style={{ padding: 4 }}>Status:</p>
-                                </Col>
-                                <Col span={20}>
-                                    <Radio.Group className="radio" onChange={event => setSelected(event.target.value)} defaultValue="S">
-                                        <Radio.Button value="S" className={"radio-item " + (selected === "S" ? "S" : "")}>Svi</Radio.Button>
-                                        <Radio.Button value="A" className={"radio-item " + (selected === "A" ? "A" : "")}>Available</Radio.Button>
-                                        <Radio.Button value="P" className={"radio-item " + (selected === "P" ? "P" : "")}>In progress</Radio.Button>
-                                        <Radio.Button value="D" className={"radio-item " + (selected === "D" ? "D" : "")}>Done</Radio.Button>
-                                        <Radio.Button value="C" className={"radio-item " + (selected === "C" ? "C" : "")}>Closed</Radio.Button>
-                                    </Radio.Group>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col span={4}>
-                                    <p style={{ padding: 4 }}>Cena:</p>
-                                </Col>
-                                <Col span={20}>
-                                    <Row>
-                                        <Col span={4} offset={8}>
-                                            <p style={{ textAlign: 'center', padding: 5 }}>od:</p>
-                                        </Col>
-                                        <Col span={4}>
-                                            <InputNumber
-                                                defaultValue={10}
-                                                style={{ width: '100%' }}
-                                                min={0}
-                                                formatter={value => `€ ${value}`}
-                                                parser={value => value.replace('€', '')}
-                                                precision={2}
-                                                step={10}
-                                                value={min}
-                                                onChange={onMinChanged}
-                                            />
-                                        </Col>
-                                        <Col span={4}>
-                                            <p style={{ textAlign: 'center', padding: 5 }}>do:</p>
-                                        </Col>
-                                        <Col span={4}>
-                                            <InputNumber
-                                                defaultValue={100}
-                                                style={{ width: '100%' }}
-                                                min={0}
-                                                formatter={value => `€ ${value}`}
-                                                parser={value => value.replace('€', '')}
-                                                precision={2}
-                                                step={10}
-                                                value={max}
-                                                onChange={onMaxChanged}
-                                            />
-                                        </Col>
-                                    </Row>
-                                </Col>
-                            </Row>
-                        </div>
+                    <div>
+                        <Row>
+                            <Col span={4}>
+                                <p style={{ padding: 4 }}>Profesije:</p>
+                            </Col>
+                            <Col span={20}>
+                                <Select
+                                    mode="multiple"
+                                    style={{ width: '100%' }}
+                                    placeholder="Please select"
+                                    onChange={setFilters}
+                                >
+                                    {professions && professions.map(p => <Option key={p.title} value={p.title}>{p.title}</Option>)}
+                                </Select>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={4}>
+                                <p style={{ padding: 4 }}>Status:</p>
+                            </Col>
+                            <Col span={20}>
+                                <Radio.Group className="radio" onChange={event => setSelected(event.target.value)} defaultValue="S">
+                                    <Radio.Button value="S" className={"radio-item " + (selected === "S" ? "S" : "")}>Svi</Radio.Button>
+                                    <Radio.Button value="A" className={"radio-item " + (selected === "A" ? "A" : "")}>Available</Radio.Button>
+                                    <Radio.Button value="P" className={"radio-item " + (selected === "P" ? "P" : "")}>In progress</Radio.Button>
+                                    <Radio.Button value="D" className={"radio-item " + (selected === "D" ? "D" : "")}>Done</Radio.Button>
+                                    <Radio.Button value="C" className={"radio-item " + (selected === "C" ? "C" : "")}>Closed</Radio.Button>
+                                </Radio.Group>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={4}>
+                                <p style={{ padding: 4 }}>Cena:</p>
+                            </Col>
+                            <Col span={20}>
+                                <Row>
+                                    <Col span={4} offset={8}>
+                                        <p style={{ textAlign: 'center', padding: 5 }}>od:</p>
+                                    </Col>
+                                    <Col span={4}>
+                                        <InputNumber
+                                            defaultValue={10}
+                                            style={{ width: '100%' }}
+                                            min={0}
+                                            formatter={value => `€ ${value}`}
+                                            parser={value => value.replace('€', '')}
+                                            precision={2}
+                                            step={10}
+                                            value={min}
+                                            onChange={onMinChanged}
+                                        />
+                                    </Col>
+                                    <Col span={4}>
+                                        <p style={{ textAlign: 'center', padding: 5 }}>do:</p>
+                                    </Col>
+                                    <Col span={4}>
+                                        <InputNumber
+                                            defaultValue={100}
+                                            style={{ width: '100%' }}
+                                            min={0}
+                                            formatter={value => `€ ${value}`}
+                                            parser={value => value.replace('€', '')}
+                                            precision={2}
+                                            step={10}
+                                            value={max}
+                                            onChange={onMaxChanged}
+                                        />
+                                    </Col>
+                                </Row>
+                            </Col>
+                        </Row>
+                    </div>
                     }
                 </div>
             </Affix>
+            }
             {isError &&  <Alert style={{marginTop: 20}} message="Problem u konekciji" type="error" />}
             <div className="list">
                 <Spin spinning={isLoading}>

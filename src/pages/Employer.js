@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Alert, Avatar, Button, Col, Form, Input, List, message, Modal, Row, Space, Spin, Tag} from "antd";
 import {useApi} from "../utils";
 import {useHistory} from "react-router";
@@ -8,16 +8,25 @@ import './Employer.css';
 import './JobList.css';
 import moment from "moment";
 import DoerStatus from "../components/DoerStatus";
+import UserContext from "../UserContext";
 
 const Employer = () => {
     const history = useHistory();
     const { id } = useParams();
+    const { userInfo } = useContext(UserContext);
+
+    // je li usao na svoj profil
+    const personalProfile = +id === userInfo?.user?.id;
 
     const [{data, isLoading, isError}, setFn] = useApi(() => api.getEmployer(id), {});
     const [favourites, setFavourites] = useState(null);
 
     const [showMessageModal, setShowMessageModal] = useState(false);
     const [messageForm] = Form.useForm(null);
+
+    const [showModal, setShowModal] = useState(false);
+
+    const [form] = Form.useForm();
 
     const fetchFavourites = async (ids) => {
         const response = await Promise.all(ids.map(id => api.getDoer(id)));
@@ -46,6 +55,31 @@ const Employer = () => {
             } catch (e) {
                 message.error('Greška pri slanju poruke')
             }
+        }
+    };
+
+    const removeFavourite = async id => {
+        try {
+            await api.removeFavourite(id);
+            setFavourites(favourites.filter(f => f.id !== id));
+        } catch (e) {
+            message.error('Greška pri uklanjanju doer-a iz liste favorita');
+        }
+    };
+
+    const reportProfile = async () => {
+        const description = form.getFieldValue('description');
+        const reportData = {
+            profile: data.user_profile.id,
+            description
+        };
+        try {
+            await api.reportProfile(reportData);
+            form.resetFields();
+            setShowModal(false);
+            message.info('Uspešno ste prijavili profil');
+        } catch (err) {
+            message.error('Greška u prijavljivanju profila');
         }
     };
 
@@ -120,13 +154,23 @@ const Employer = () => {
                     </Col>
                 </Row>
                 <Row>
-                    <Col span={4} offset={10}>
+                    <Col span={4} offset={7}>
                         <Button
                             type="primary"
                             style={{ width: '100%' }}
                             onClick={() => setShowMessageModal(true)}
                         >
                             Pošalji poruku
+                        </Button>
+                    </Col>
+                    <Col span={4} offset={2}>
+                        <Button
+                            type="primary"
+                            danger
+                            style={{ width: '100%' }}
+                            onClick={() => setShowModal(true)}
+                        >
+                            Prijavi
                         </Button>
                     </Col>
                 </Row>
@@ -146,6 +190,21 @@ const Employer = () => {
                                         onClick={() => {
                                             history.push(`/site/doer/${item.id}`);
                                         }}
+                                        extra={
+                                            personalProfile ?
+                                                <Button
+                                                    type="primary"
+                                                    danger
+                                                    style={{ fontWeight: 'bold' }}
+                                                    onClick={e => {
+                                                        e.stopPropagation();
+                                                        removeFavourite(item.id);
+                                                    }}
+                                                >
+                                                    X
+                                                </Button> :
+                                                null
+                                        }
                                     >
                                         <List.Item.Meta
                                             avatar={<Avatar src={item.profile_pic} size={60} />}
@@ -202,6 +261,38 @@ const Employer = () => {
                         <Input.TextArea />
                     </Form.Item>
                 </Form>
+            </Modal>
+            <Modal
+                okText="Prijavi"
+                cancelText="Poništi"
+                visible={showModal}
+                onOk={reportProfile}
+                onCancel={() => {
+                    setShowModal(false);
+                    form.resetFields();
+                }}
+                closable={true}
+            >
+                <h2>Prijava sumnjivog posla</h2>
+                <Row justify="space-between" style={{ marginTop: 20 }}>
+                    <Col span={3}>
+                        <p style={{ padding: 6 }}>Opis: </p>
+                    </Col>
+                    <Col span={20}>
+                        <Form
+                            form={form}
+                        >
+                            <Form.Item
+                                name="description"
+                            >
+                                <Input.TextArea
+                                    placeholder="Ovde napišite zašto prijavljujete posao."
+                                    autoSize={true}
+                                />
+                            </Form.Item>
+                        </Form>
+                    </Col>
+                </Row>
             </Modal>
         </div>
     );
