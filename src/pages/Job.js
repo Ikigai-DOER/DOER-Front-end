@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Alert, Button, Col, Form, Input, InputNumber, message, Modal, Radio, Row, Select, Spin, Tag} from "antd";
 import './Job.css';
 import api from "../api";
@@ -24,6 +24,15 @@ const Job = () => {
 
     const readOnly = jobId !== undefined;
 
+    const [location, setLocation] = useState(null);
+    useEffect(() => {
+        if (!readOnly) {
+            navigator.geolocation.getCurrentPosition(loc => {
+                setLocation({lat: loc.coords.latitude, lng: loc.coords.longitude});
+            });
+        }
+    }, [readOnly]);
+
     const getJobFn = () => {
         if (jobId) {
             return api.getJob(jobId);
@@ -43,7 +52,9 @@ const Job = () => {
 
     const submit = async (values) => {
         const job = {...values, professions: selectedProfessions};
-        console.log('JOB', job);
+        if (location) {
+            job.location = `${location.lat},${location.lng}`;
+        }
         try {
             await api.postJob(job);
             message.info('Uspesno ste dodali posao');
@@ -70,9 +81,17 @@ const Job = () => {
 
     const submitRequest = async () => {
         const offer = submitForm.getFieldValue('offer');
-        const data = {request: +jobId, offer};
+        const submissionData = {request: +jobId, offer};
         try {
-            await api.submitJobRequest(data);
+            await api.submitJobRequest(submissionData);
+            console.log("PORUKA SE SALJE", data, offer);
+            if (data?.employer?.id) {
+                try {
+                    await api.sendMessage(data.employer.user_profile.id, offer);
+                } catch (err) {
+                    message.error("Poruka nije poslana");
+                }
+            }
             message.info('Uspešno ste se prijavili za posao');
             setShowSubmitModal(false);
         } catch (err) {
@@ -96,11 +115,21 @@ const Job = () => {
                                 <h1 style={{ fontSize: 40 }}>Dodaj posao</h1>
                             </Col>
                         </Row>
+                        {location !== null &&
+                            <Row style={{ textAlign: 'center', marginBottom: 20 }}>
+                                <Col span={24}>
+                                    <a href={`https://gps-coordinates.org/my-location.php?lat=${location.lat}&lng=${location.lng}`} target="_blank" rel="noopener noreferrer">
+                                        <i className="fas fa-map-marker-check"/>
+                                        Lokacija ({`${location.lat},${location.lng}`})
+                                    </a>
+                                </Col>
+                            </Row>
+                        }
                         <Row>
                             <Col span={4}>
                                 <p>Naslov:</p>
                             </Col>
-                            <Col span={20}>
+                            <Col span={readOnly ? 16 : 20}>
                                 <Form.Item
                                     name="title"
                                 >
@@ -110,6 +139,14 @@ const Job = () => {
 
                                     }
                                 </Form.Item>
+                            </Col>
+                            <Col span={4}>
+                                {data.location &&
+                                <a href={`https://gps-coordinates.org/my-location.php?lat=${data.location.split(',')[0]}&lng=${data.location.split(',')[1]}`} target="_blank" rel="noopener noreferrer">
+                                    <i className="fas fa-map-marker-check"/>
+                                    Lokacija
+                                </a>
+                                }
                             </Col>
                         </Row>
                         <Row>

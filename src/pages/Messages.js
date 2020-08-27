@@ -7,6 +7,7 @@ import UserContext from "../UserContext";
 import {uniq} from "lodash";
 import moment from "moment";
 import {BASE_URL} from "../constants";
+import {Link} from "react-router-dom";
 
 const Messages = () => {
 
@@ -101,9 +102,9 @@ const Messages = () => {
                             >
                                 <List.Item.Meta
                                     avatar={<Avatar src={BASE_URL + item.user.profile_pic} />}
-                                    title={<a href="https://ant.design">{
-                                        item.user.user_profile.first_name + ' ' + item.user.user_profile.last_name
-                                    }</a>}
+                                    title={<Link to={(item.user.user_rating === undefined ? '/site/employer/' : '/site/doer/') + item.user.id}>
+                                        {item.user.user_profile.first_name + ' ' + item.user.user_profile.last_name}
+                                    </Link>}
                                     description={getLastMessage(item.user.user_profile.id)?.message || "prazno"}
                                 />
                             </List.Item>

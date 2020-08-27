@@ -59,7 +59,7 @@ const JobList = () => {
         setIsError(false);
         try {
             const response = personal
-                ? await api.getPersonalJobs()
+                ? await api.getMyJobs()
                 : filters.length === 0 && selected === 'S'
                     ? await api.getJobs()
                     : await api.getFilteredJobs(filters, min, max, selected === 'S' ? null : selected);
@@ -73,7 +73,7 @@ const JobList = () => {
 
     useEffect(() => {
         fetch();
-    }, []);
+    }, [personal]);
 
     useEffect(() => {
         async function getProfessions() {

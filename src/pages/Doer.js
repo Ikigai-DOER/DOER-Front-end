@@ -49,6 +49,17 @@ const Doer = () => {
         }
     };
 
+    const addToFavourites = async () => {
+        if (id) {
+            try {
+                await api.addFavourite(id);
+                message.info('Uspešno ste dodali doer-a u listu favorita');
+            } catch (err) {
+                message.error('Greška pri dodavanju u favorite');
+            }
+        }
+    };
+
     if (isLoading) {
         return (
             <Spin size="large" style={{ width: '100%', height: '100%', marginTop: 200 }} />
@@ -125,8 +136,11 @@ const Doer = () => {
                             Pošalji poruku
                         </Button>
                         {userInfo?.doer !== null && userInfo.doer === false &&
-                            <Button type="primary">
-                                Unajmi
+                            <Button
+                                type="primary"
+                                onClick={addToFavourites}
+                            >
+                                Dodaj u favorite
                             </Button>
                         }
                         <Button type="primary" danger>

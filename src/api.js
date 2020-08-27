@@ -33,6 +33,7 @@ export default {
     getJobs: () => axios.get('request/'),
     getJob: id => axios.get(`request/${id}/`),
     getPersonalJobs: () => axios.get('personal-requests/'),
+    getMyJobs: () => axios.get('my-requests-list/'),
     getProfessions: () => axios.get('profession/'),
     getFilteredJobs: (professions, min, max, status) => axios.get('request-search/', { params: { professions: professions.join(), min, max, status } }),
     postJob: job => axios.post('request/', { ...job }),
@@ -44,6 +45,8 @@ export default {
     submitJobRequest: data => axios.post('request-submission/', data),
     getMessages: () => axios.get('message/'),
     sendMessage: (receiver, message) => axios.post('message/', { receiver, message }),
+    addFavourite: doerId => axios.post('add-favorite-doer/', null, { params: { doerId } }),
+    removeFavourite: doerId => axios.post('remove-favorite-doer/', null, { params: { doerId } }),
     setProfileSettings: async (isDoer, id, data) => {
         try {
             const prefix = isDoer ? 'doer/' : 'employer/';
